@@ -23,6 +23,9 @@ Layout: https://github.com/BenoitFreslon/benoitfreslon-layoutmanager
 
 Filter collection: http://blog.onebyonedesign.com/actionscript/starling-filter-collection/
 
+# Android5 AIR issue fix
+https://forums.adobe.com/thread/1636480
+
 # Andorid5 on HP Touchpad
 http://forum.xda-developers.com/showthread.php?t=2756314
 
