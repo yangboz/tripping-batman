@@ -1,5 +1,11 @@
 # tripping-batman
 Sort of materials and links for AS3/Starling/FeatuerUI
+# FLEX Mobile examples:
+
+BMW CRM: https://github.com/yangboz/drunken-octo-cyril
+
+GM WholeSaleSystem: https://github.com/yangboz/yolo-octo-hipster
+
 # Staring
 http://gamua.com/starling/
 # Staring Extension
