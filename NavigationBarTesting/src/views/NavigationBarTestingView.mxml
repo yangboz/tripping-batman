@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:View xmlns:fx="http://ns.adobe.com/mxml/2009"
+		xmlns:s="library://ns.adobe.com/flex/spark"
+		color="red" fontSize="14" title="结算" 
+		creationComplete="view1_creationCompleteHandler(event)"
+		>
+	<fx:Script>
+		<![CDATA[
+			import mx.collections.ArrayList;
+			import mx.core.FlexGlobals;
+			import mx.events.FlexEvent;
+			import mx.rpc.events.ResultEvent;
+			
+			import model.BrandModel;
+			
+			[Bindable]
+			private var resultList:ArrayList;
+			
+			private var topApplication:NavigationBarTesting;
+			
+			protected function view1_creationCompleteHandler(event:FlexEvent):void
+			{
+				// TODO Auto-generated method stub
+//				this.lbl_mobile.text = GlobalVariables.dict_mobile.number;
+				trace(this.width);
+			}
+			
+			protected function httpservice1_resultHandler(event:ResultEvent):void
+			{
+				// TODO Auto-generated method stub
+				trace(event.result.toString());
+				var jsonArray:Array = JSON.parse(event.result.toString()) as Array;
+				this.resultList = new ArrayList(jsonArray);
+			}
+			
+			protected function submitHandler(event:MouseEvent):void
+			{
+				this.myHttpService.send();
+			}
+			
+			protected function button1_clickHandler(event:MouseEvent):void
+			{
+				topApplication = mx.core.FlexGlobals.topLevelApplication as NavigationBarTesting;
+				topApplication.navigator.pushView(AnotherView,new BrandModel("11111",'aaaaa','eeee','hhhah'));
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
+		<s:HTTPService id="myHttpService" 
+					   url="http://121.41.74.65/api/brand/?format=json" 
+					   result="httpservice1_resultHandler(event)"
+					   contentType="application/x-www-form-urlencoded"
+					   /> 
+	</fx:Declarations>
+	<s:VGroup height="100%">
+		
+		<s:VGroup>
+			<s:HGroup>
+				<s:HGroup verticalAlign="middle">
+					<s:Image top="10" source="@Embed('../assets/images/icon_moumoumou.png')"/>
+					<s:Label top="10" color="black" text="某某某"/>
+				</s:HGroup>
+				<s:HGroup verticalAlign="middle">
+					<s:Image source="@Embed('../assets/images/icon_1381234.png')"/>
+					<s:Label id="lbl_mobile" color="black" text="{GlobalVariables.dict_mobile}"/>
+				</s:HGroup>
+			</s:HGroup>
+		</s:VGroup >
+		<s:List width="100%" dataProvider="{resultList}" itemRenderer="views.BrandItemRender">
+		</s:List>
+		<!--<s:HGroup horizontalAlign="left" width="100%">
+			<s:List dataProvider="{resultList}" itemRenderer="views.BrandItemRender">
+			</s:List>
+		</s:HGroup>-->
+			
+		<s:VGroup>
+			<s:HGroup width="100%" >
+				<s:Spacer width="50"/>
+				<s:Label maxDisplayedLines="1" lineBreak="toFit" text="支付方式支付支付方式支付支付方式支付支付方式支付支付支付方式支付支付支付方式支付支付支付方式支付" maxWidth="195" />
+				<s:Spacer width="100%"/>
+				<s:Label text="支付宝支付宝支付宝支付宝支付宝" />
+				<s:Spacer width="10"/>
+				<s:Button />
+				<s:Spacer width="50"/>
+			</s:HGroup>
+			<s:HGroup>
+				<s:TextInput text="运费"/>
+				<s:TextInput text="免运费"/>
+			</s:HGroup>
+			<s:HGroup>
+				<s:TextInput text="总共支付"/>
+				<s:TextInput text="¥400"/>
+			</s:HGroup>
+		</s:VGroup>
+		<!--<s:Image source="assets/images/icon_1381234.png" maxWidth="600" maxHeight="200" minWidth="200" minHeight="200"/>-->
+		<s:VGroup height="100%"/>
+		
+		<s:Button label="提交订单" click="submitHandler(event)"/>
+		<s:Button label="第二个视图" click="button1_clickHandler(event)"/>
+	</s:VGroup>
+</s:View>

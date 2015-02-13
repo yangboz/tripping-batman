@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:View xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		xmlns:s="library://ns.adobe.com/flex/spark" 
+		title="第二个视图"
+	    backKeyPressed="button1_clickHandler(event)"
+	    creationComplete="view1_creationCompleteHandler(event)"
+		>
+	
+	<fx:Script>
+		<![CDATA[
+			import mx.core.FlexGlobals;
+			import mx.events.FlexEvent;
+			
+			import model.BrandModel;
+			private var topApplication:NavigationBarTesting;
+			
+			protected function button1_clickHandler(event:*):void
+			{
+				// TODO Auto-generated method stub
+				topApplication = mx.core.FlexGlobals.topLevelApplication as NavigationBarTesting;
+				topApplication.navigator.pushView(NavigationBarTestingView,{"b":"a"});
+				//
+			}
+			
+			protected function view1_creationCompleteHandler(event:FlexEvent):void
+			{
+				trace(this.data as BrandModel);
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
+	</fx:Declarations>
+	<s:Button label="去第一个视图" click="button1_clickHandler(event)"/>
+</s:View>
