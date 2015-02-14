@@ -41,4 +41,9 @@ http://blogs.adobe.com/jasonsj/2011/06/ios-theme-for-flex-mobile-projects-proof-
 # iOS cert to p12
 http://www.adobe.com/devnet/air/articles/packaging-air-apps-ios.html
 
+# Fat-jar
+http://fjep.sourceforge.net/
+
+# Link-a
+https://github.com/yangboz/fuzzy-octo-archer/blob/master/FaceFeature/lipo_static_library_ios_simulator_shell
 
