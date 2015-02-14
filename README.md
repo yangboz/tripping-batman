@@ -38,6 +38,7 @@ http://forum.xda-developers.com/showthread.php?t=2756314
 # iOS theme for FLEX mobile
 http://blogs.adobe.com/jasonsj/2011/06/ios-theme-for-flex-mobile-projects-proof-of-concept.html
 
-
+# iOS cert to p12
+http://www.adobe.com/devnet/air/articles/packaging-air-apps-ios.html
 
 
