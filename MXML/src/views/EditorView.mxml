@@ -1,0 +1,784 @@
+<?xml version="1.0" encoding="utf-8"?>
+<views:ViewBase xmlns:fx="http://ns.adobe.com/mxml/2009" 
+				xmlns:s="library://ns.adobe.com/flex/spark" 
+				xmlns:mx="library://ns.adobe.com/flex/mx" 
+				xmlns:views="views.*" width="100%" height="100%" 
+				xmlns:components="views.components.*"
+				xmlns:view="com.vstyran.transform.view.*" 
+				xmlns:model="com.vstyran.transform.model.*" 
+				xmlns:spark="de.patrickheinzelmann.components.spark.*"
+				>
+	<fx:Script>
+		<![CDATA[
+			import com.godpaper.as3.ImageMagick.AS3ImageMagick;
+			import com.godpaper.as3.ImageMagick.ImageMagickEvent;
+			import com.godpaper.as3.ImageMagick.ImageMagickFacts;
+			import com.godpaper.as3.ImageMagick.ImageMagickFactsBuilder;
+			import com.vstyran.transform.consts.GuidelineType;
+			import com.vstyran.transform.consts.TransformationType;
+			import com.vstyran.transform.events.GuidelineEvent;
+			import com.vstyran.transform.events.TransformEvent;
+			import com.vstyran.transform.model.Guideline;
+			import com.vstyran.transform.utils.DataUtil;
+			
+			import model.AppData;
+			import model.ImageOprVO;
+			
+			import mx.core.IVisualElement;
+			import mx.events.FlexEvent;
+			import mx.events.ResizeEvent;
+			import mx.graphics.BitmapSmoothingQuality;
+			import mx.messaging.events.ChannelEvent;
+			import mx.utils.ObjectUtil;
+			
+			import spark.events.IndexChangeEvent;
+			
+			import utils.ImageUtil;
+			///Variables
+			
+			//AS3ImageMagick
+			private var as3ImageMagick:AS3ImageMagick;
+			//
+			public function get process():NativeProcess
+			{
+				return as3ImageMagick.nativeProcess;
+			}
+			//UITransformTools: @see http://vstyran-flex.ho.ua/
+			override public function creationCompleteHandler(event:FlexEvent):void
+			{
+				///Upldate UI images.
+				this.updateImageViews();
+				//Update tool
+				this.updateUITransformTools();
+			}
+			
+			override protected function id_list_changeHandler(event:IndexChangeEvent):void
+			{
+				super.id_list_changeHandler(event);
+				///Upldate UI images.
+				this.updateImageViews();
+				///Align Image Views.
+				this.alignImageView();
+				///Image autosize
+				this.autoResizeImageView();
+				//Update tool
+				this.updateUITransformTools();
+				//Reset slider values and change id_image_edit.
+				this.id_vslider_rotate.value = 0;
+				this.id_vslider_scale.value = 1.0;
+				this.id_vslider_rotate.dispatchEvent(new Event(Event.CHANGE,false,false));
+				this.id_vslider_scale.dispatchEvent(new Event(Event.CHANGE,false,false));
+			}
+			
+			override public function get viewBackgroundImage():Bitmap
+			{
+				return new AppData.BG_IMG_01() as Bitmap;
+			}
+			
+			public function updateImageViews():void
+			{
+				///Display image_editor
+				this.id_image_edit.source = AppData.uploadedImageFile.nativePath;
+				this.id_image_edit.addEventListener(Event.COMPLETE,id_image_edit_completeHandler);
+				//
+//				this.id_image_edit.minHeight = this.getRequiredCertPhotoHeight();
+//				this.id_image_edit.minWidth = this.getRequiredCertPhotoWidth();
+				//
+				this.id_image_instruction.source = AppData.ARRAY_INS_CERT_TEXTS[AppData.selectedCertSizeIndex];
+				//
+//				this.id_image_frame.source = AppData.ARRAY_EDITOR_PHOTO_FRAMES[AppData.selectedCertSizeIndex];
+				//
+				var id_image_frame_point:Point = AppData.ARRAY_EDITOR_POINT_FRAMES[AppData.selectedCertSizeIndex] as Point;
+//				this.id_image_frame.x = id_image_frame_point.x;
+//				this.id_image_frame.y = id_image_frame_point.y;
+				//
+				this.id_image_guide.source = AppData.ARRAY_EDITOR_PHOTO_GUIDES[AppData.selectedCertSizeIndex];
+				var id_image_guide_point:Point = AppData.ARRAY_EDITOR_POINT_GUIDES[AppData.selectedCertSizeIndex] as Point;
+//				this.id_image_guide.x = id_image_guide_point.x;
+//				this.id_image_guide.y = id_image_guide_point.y;
+				//Image group
+//				var id_group_point:Point = AppData.ARRAY_EDITOR_POINT_PHOTOS[AppData.selectedCertSizeIndex] as Point;
+//				this.id_group.x = id_group_point.x;
+//				this.id_group.y = id_group_point.y;
+//				this.id_group.maxWidth = this.getRequiredCertPhotoWidth();
+//				this.id_group.maxHeight = this.getRequiredCertPhotoHeight();
+				//
+//				this.id_uit_group.x = id_group_point.x;
+//				this.id_uit_group.y = id_group_point.y;
+				this.id_group_uit.width = this.getRequiredCertPhotoWidth();
+				this.id_group_uit.height = this.getRequiredCertPhotoHeight();
+			}
+			
+			protected function alignImageView():void
+			{
+//				this.id_image_edit.x = 0;
+//				this.id_image_edit.y = 0;
+				this.id_image_edit.rotation = 0;
+				//Align the id_group_uit to center.
+				this.id_group_uit.x = this.id_group_edit.width/2 - this.id_group_uit.width/2;
+				this.id_group_uit.y = this.id_group_edit.height/2 - this.id_group_uit.height/2;
+				//Define bounds
+				this.id_bounds_uit.x = this.id_group_edit.x + (this.id_group_edit.width-this.id_group_image.width)/2;
+				this.id_bounds_uit.y = this.id_group_edit.y + (this.id_group_edit.height-this.id_group_image.height)/2;
+			}
+			//
+			protected function autoResizeImageView():void
+			{
+				//
+				var contentW:Number = this.id_image_edit.content.width;
+				var contentH:Number = this.id_image_edit.content.height;
+//				var contentW:Number = this.id_image_edit.bitmapData.width;
+//				var contentH:Number = this.id_image_edit.bitmapData.height;
+				var contentWHratio:Number = contentW/contentH;
+				//
+//				var requiredW:Number = getRequiredCertPhotoWidth();
+//				var requiredH:Number = getRequiredCertPhotoHeight();
+				var requiredW:Number = AppData.MAX_UIT_WIDTH_DEFAULT;
+				var requiredH:Number = AppData.MAX_UIT_HEIGHT_DEFAULT;
+//				var requiredWHratio:Number = requiredW/requiredH;
+				//Ratio check
+				if(contentW<=contentH)
+				{
+					this.id_image_edit.width = requiredW;
+					this.id_image_edit.height = requiredW * contentH/contentW;
+					//
+//					this.id_image_edit.maxWidth = requiredW + (AppData.MAX_UIT_HEIGHT_DEFAULT-this.id_image_edit.height) * contentW/contentH;
+//					this.id_image_edit.maxHeight = AppData.MAX_UIT_HEIGHT_DEFAULT;
+				}else
+				{
+					this.id_image_edit.width = requiredH * contentW/contentH;
+					this.id_image_edit.height = requiredH;
+					//
+//					this.id_image_edit.maxHeight = requiredH + (AppData.MAX_UIT_WIDTH_DEFAULT-this.id_image_edit.width) * contentH/contentW;
+//					this.id_image_edit.maxWidth = AppData.MAX_UIT_WIDTH_DEFAULT;
+				}
+				//
+				AppData.savedImgOprVO = new ImageOprVO();//Changed if neccessary;
+				//Initialize only once;
+				//Changed if neccessary;
+				AppData.savedImgOprVO.iScaleX = this.id_image_edit.width/contentW;
+				AppData.savedImgOprVO.iScaleY = this.id_image_edit.height/contentH;
+				//
+				AppData.savedImgOprVO.requiredWidth = this.getRequiredCertPhotoWidth();
+				AppData.savedImgOprVO.requiredHeight = this.getRequiredCertPhotoHeight();
+				AppData.savedImgOprVO.resizeWidth = this.id_image_edit.width;
+				AppData.savedImgOprVO.resizeHeight = this.id_image_edit.height;
+				//
+				trace("(after autoResizeImageView)AppData.savedImageOperation:",AppData.savedImgOprVO);
+				//Calllater
+				this.id_image_edit.callLater(renderCroppedImg);
+			}
+			
+			protected function reupload_button_clickHandler(event:MouseEvent):void
+			{
+				AppData.mainApp.id_viewStack.selectedIndex = AppData.VIEW_UPLOAD;
+				//Clear id_image_edit opration history
+				this.id_image_edit.rotation = 0;
+				this.id_image_edit.width = NaN;
+				this.id_image_edit.height = NaN;
+				this.id_image_edit.x = 0;
+				this.id_image_edit.y = 0;
+				//Clear UITransform tool's opration history
+				this.deselectUITransformTool(new MouseEvent(MouseEvent.CLICK));
+				//Avoid cache issue.
+				this.id_image_edit.source = "";
+				//Reset image operation
+				AppData.savedImgOprVO = new ImageOprVO();
+				//Reset slider values and change id_image_edit.
+				this.id_vslider_rotate.value = 0;
+				this.id_vslider_scale.value = 1.0;
+//				this.id_vslider_rotate.dispatchEvent(new Event(Event.CHANGE,false,false));
+//				this.id_vslider_scale.dispatchEvent(new Event(Event.CHANGE,false,false));
+			}
+			
+			protected function editnext_button_clickHandler(event:MouseEvent):void
+			{
+				if(!AppData.USE_IMAGE_MAGICK)
+				{
+					
+				//Draw bitmap data, then save to file
+				var requiredPhotoWidth:Number = this.getRequiredCertPhotoWidth();
+				var requiredPhotoHeight:Number = this.getRequiredCertPhotoHeight();
+				var bitMapData:BitmapData = new BitmapData(requiredPhotoWidth,requiredPhotoHeight,true); 
+				/* var bitMapData:BitmapData = ImageUtil.resample(AppData.uploadFileBitmapData,requiredPhotoWidth,requiredPhotoHeight,
+					AppData.savedImageMatrix.a,AppData.savedImageMatrix.d,0,
+					StageQuality.BEST); */
+				/*
+				AppData.savedImageMatrix = new Matrix();
+				AppData.savedImageMatrix.scale(requiredPhotoWidth/this.id_image_edit.contentWidth,requiredPhotoHeight/this.id_image_edit.contentHeight);
+				//
+				var rect:Rectangle = new Rectangle(0,0,requiredPhotoWidth,requiredPhotoHeight);
+				var bufferBitmapData:BitmapData = new BitmapData(rect.width,rect.height);
+				bufferBitmapData.copyPixels(AppData.originalFileBitmapData,rect,new Point(0,0));
+				//
+//				bufferMatix.scale(requiredPhotoWidth/this.id_image_edit.contentWidth,requiredPhotoHeight/this.id_image_edit.contentHeight);
+				bitMapData.draw(bufferBitmapData,this.id_uit_tool.transform.matrix); 
+				*/
+				bitMapData.draw(this.id_image_masked,null,null,null,new Rectangle(0,0,requiredPhotoWidth,requiredPhotoHeight),true); 
+//				bitMapData.drawWithQuality(this.id_image_edit.bitmapData,null,null,null,null,true,StageQuality.BEST);
+//				bitMapData.drawWithQuality(AppData.uploadFileBitmapData,AppData.savedImageMatrix,null,null,new Rectangle(0,0,requiredPhotoWidth,requiredPhotoHeight),true,StageQuality.BEST);
+				//
+//				trace("this.id_uit_tool.transform:",this.id_uit_tool.transform);
+				//
+				AppData.saveImageFile(bitMapData);
+				//Then go to next view.
+				AppData.mainApp.id_viewStack.selectedIndex = AppData.VIEW_VERIFING;	
+				}else
+				{
+					//Using AIR native process call on ImageMagick.
+					this.originalImageOperation();
+				}
+			}
+			//
+			private function deselectUITransformTool(event:MouseEvent):void
+			{
+				id_uit_cropper.targets = null;
+				id_uit_cropper.visible = false;
+				id_uit_cropper.includeInLayout = false;
+			}
+			
+			private function selectUITransformTool(event:MouseEvent):void
+			{
+//				id_uit_tool.targets = [id_image_edit];
+				id_uit_cropper.targets = [id_group_uit];
+				id_uit_cropper.visible = true;
+				id_uit_cropper.includeInLayout = true;
+				//UITransformTool
+//				id_uit_tool.width = id_image_edit.bitmapData.width;
+//				id_uit_tool.height = id_image_edit.bitmapData.height;
+			}
+			
+			private function onEditorScaleSliderChange(event:Event):void
+			{
+				this.applyZoom(this.id_image_edit,this.id_vslider_scale.value);
+				//Update tool
+				this.updateUITransformTools();
+			}
+			private function onEditorRotateSliderChange(event:Event):void
+			{
+				this.applyRotate(this.id_image_edit,this.id_vslider_rotate.value);
+				//Update tool
+				this.updateUITransformTools();
+			}
+			
+			protected function rotate90ButtonClickHandler(event:MouseEvent):void
+			{
+				this.id_vslider_rotate.value += 90;
+				this.applyRotate(this.id_image_edit,this.id_vslider_rotate.value);		
+			}
+			
+			protected function zoomInButtonClickHandler(event:MouseEvent):void
+			{
+				this.id_vslider_scale.value += 0.1; 
+				this.applyZoom(this.id_image_edit,this.id_vslider_scale.value);
+			}
+			
+			protected function zoomOutButtonClickHandler(event:MouseEvent):void
+			{
+				this.id_vslider_scale.value -= 0.1; 
+				this.applyZoom(this.id_image_edit,this.id_vslider_scale.value);
+			}
+			
+			private function applyRotate(target:DisplayObject,angle:Number):void
+			{
+				// Calculate rotation and offsets
+				var radians:Number = angle * (Math.PI / 180.0);
+				var offsetWidth:Number = target.width/2.0;
+				var offsetHeight:Number =  target.height/2.0;
+				// Perform rotation
+				var matrix:Matrix = new Matrix();
+				matrix.translate(-offsetWidth, -offsetHeight);
+				matrix.rotate(radians);
+				matrix.translate(+offsetWidth, +offsetHeight);
+				matrix.concat(this.id_image_edit.transform.matrix);
+				target.transform.matrix = matrix; 
+				//Update tool
+//				this.updateUITransformTools();
+				//Update cropper
+				this.renderCroppedImg();
+			}
+			private function applyZoom(target:DisplayObject,ratio:Number):void
+			{
+//				target.scaleX = ratio;
+//				target.scaleY = ratio;
+//				//
+				var posX:Number = target.x;
+				var posY:Number = target.y;
+				target.x = target.width/2;
+				target.y = target.height/2;
+				target.scaleX = ratio;
+				target.scaleY = ratio;
+				target.x = posX;
+				target.y = posY;
+//				//Update tool
+//				this.updateUITransformTools();
+				//Update cropper
+				this.renderCroppedImg();
+				//Update model value.
+				AppData.savedImgOprVO.resizeWidth = target.width*ratio;
+				AppData.savedImgOprVO.resizeHeight = target.height*ratio;
+			}
+			
+			protected function tool_transformationCompleteHandler(event:TransformEvent):void
+			{
+				trace("(before transformationComplete)savedImgOprOV:",ObjectUtil.toString(AppData.savedImgOprVO));
+				//
+				var rectangle:Rectangle = this.id_image_edit.getRect(this);
+//				AppData.savedImageMatrix = event.data.matrix;
+				switch(event.transformationType)
+				{
+					case TransformationType.RESIZE:
+						//
+						AppData.savedImgOprVO.tX = event.data.matrix.tx;
+						AppData.savedImgOprVO.tY = event.data.matrix.ty;
+						//
+						AppData.savedImgOprVO.uScaleX = event.data.width/AppData.savedImgOprVO.requiredWidth;
+						AppData.savedImgOprVO.uScaleY = event.data.height/AppData.savedImgOprVO.requiredHeight;
+						break;
+					case TransformationType.ROTATE:
+						//
+						AppData.savedImgOprVO.r = this.id_image_edit.rotation;
+						//
+						AppData.savedImgOprVO.tX = event.data.matrix.tx;
+						AppData.savedImgOprVO.tY = event.data.matrix.ty;
+						break;
+					case TransformationType.MOVE:
+						//
+						break;
+					default:
+						break;
+				}
+				trace("(after transformationComplete)savedImgOprOV:",ObjectUtil.toString(AppData.savedImgOprVO));
+			}
+			
+			protected function tool_transformationHandler(event:TransformEvent):void
+			{
+//				trace("toolData.matrix(transformation):",event.toolData.matrix);
+//				trace("data.matrix(transformation):",event.data.matrix);
+				//Update cropper
+				this.renderCroppedImg();
+			}
+			
+			private function get cropperOffsetX():Number
+			{
+				var id_group_image_point:Point = this.id_image_edit.parent.localToGlobal(new Point(this.id_image_edit.x,this.id_image_edit.y));
+				var id_uit_cropper_point:Point = this.id_uit_cropper.parent.localToGlobal(new Point(this.id_uit_cropper.x,this.id_uit_cropper.y));
+//				trace("id_group_image_point:",id_group_image_point,"id_uit_cropper_point:",id_uit_cropper_point);
+				return id_uit_cropper_point.x - id_group_image_point.x;
+			}
+			
+			private function get cropperOffsetY():Number
+			{
+				var id_group_image_point:Point = this.id_image_edit.parent.localToGlobal(new Point(this.id_image_edit.x,this.id_image_edit.y));
+				var id_uit_cropper_point:Point = this.id_uit_cropper.parent.localToGlobal(new Point(this.id_uit_cropper.x,this.id_uit_cropper.y));
+//				trace("id_group_image_point:",id_group_image_point,"id_uit_cropper_point:",id_uit_cropper_point);
+				return id_uit_cropper_point.y - id_group_image_point.y;
+			}
+			
+			private function updateUITransformTools():void
+			{
+				//Update tool
+				this.id_uit_cropper.updateTool(true);
+/*	
+				//Update tool guide lines
+				var guidelines:Vector.<Guideline> = new Vector.<Guideline>();
+				
+				for (var i:int = 0; i < id_border_container.numElements; i++) 
+				{
+					var element:IVisualElement = id_border_container.getElementAt(i);
+					
+					if(element is Image && id_uit_tool.target != element)
+					{
+						var box:Rectangle = DataUtil.createData(element as Image).getBoundingBox();
+						
+						guidelines.push(new Guideline(GuidelineType.VERTICAL_EDGE, box.x, 3));
+//						guidelines.push(new Guideline(GuidelineType.VERTICAL_CENTER, box.x+box.width/2, 3));
+//						guidelines.push(new Guideline(GuidelineType.VERTICAL_EDGE, box.x+box.width, 3));
+						
+						guidelines.push(new Guideline(GuidelineType.HORIZONTAL_EDGE, box.y, 3));
+//						guidelines.push(new Guideline(GuidelineType.HORIZONTAL_CENTER, box.y+box.height/2, 3));
+//						guidelines.push(new Guideline(GuidelineType.HORIZONTAL_EDGE, box.y+box.height, 3));
+						
+						if((element as Image).rotation%90 != 0)
+						{
+							var guideLine:Guideline = new Guideline(GuidelineType.ROTATION, (element as Image).rotation, 3);
+							guideLine.userData = element;
+							guidelines.push(guideLine);
+						}
+					}
+				}
+				id_uit_tool.guidelines = guidelines;
+*/				//Update the size of cropper has obtained.
+				if(AppData.savedImgOprVO.cropWidth && AppData.savedImgOprVO.cropHeight)
+				{
+					this.id_group_uit.width = AppData.savedImgOprVO.cropWidth;
+					this.id_group_uit.height = AppData.savedImgOprVO.cropHeight;
+					this.id_uit_cropper.target = this.id_group_uit;//Update it again!
+				}
+			}
+			/*
+			protected function tool_guidelinesUpdateHandler(event:GuidelineEvent):void
+			{
+				if(event.cross && event.cross.vGuideline)
+					vGuide.x = event.cross.vGuideline.value;
+				vGuide.visible = (event.cross && event.cross.vGuideline);
+				
+				if(event.cross && event.cross.hGuideline)
+					hGuide.y = event.cross.hGuideline.value;
+				hGuide.visible = (event.cross && event.cross.hGuideline);
+				
+				passiveGuideGroup.removeAllElements();
+				if(event.cross)
+				{
+					if(true)
+					{
+						for each (var vguide:Guideline in event.cross.getVGuidelines()) 
+						{
+							var vGuideLine:VGuideLine = new VGuideLine();
+							vGuideLine.x = vguide.value;
+							passiveGuideGroup.addElement(vGuideLine);
+						}
+						for each (var hguide:Guideline in event.cross.getHGuidelines()) 
+						{
+							var hGuideLine:HGuideLine = new HGuideLine();
+							hGuideLine.y = hguide.value;
+							passiveGuideGroup.addElement(hGuideLine);
+						}
+					}
+					
+					if(event.transformationType == TransformationType.ROTATE)
+					{
+						if(event.cross.rGuideline)
+						{
+							var rTargetGuideLine:RGuideLine = new RGuideLine();
+							rTargetGuideLine.update(id_uit_tool.target, passiveGuideGroup);
+							passiveGuideGroup.addElement(rTargetGuideLine);
+						}
+						
+						for each (var rguide:Guideline in event.cross.getRGuidelines()) 
+						{
+							var rGuideLine:RGuideLine = new RGuideLine();
+							rGuideLine.update(rguide.userData as Image, passiveGuideGroup);
+							passiveGuideGroup.addElement(rGuideLine);
+						}
+					}
+				}
+			}	
+			*/
+			private function id_image_edit_completeHandler(event:Event):void
+			{
+//				trace("id_image_edit_completeHandler!");
+				///Align Image Views.
+				this.alignImageView();
+				///Image autosize
+				this.autoResizeImageView();
+				///
+				this.selectUITransformTool(new MouseEvent(MouseEvent.CLICK));
+			}
+			//
+			private function originalImageOperation():void
+			{
+				AppData.savedImageFie = File.createTempDirectory().resolvePath(AppData.getRandomWorkspaceDirName());
+				//@example: convert C:\\image.JPG -resize 333x500 -page 333x333+0+0 -rotate 30 -crop 333x333+0+0 -background white -flatten C:\\output_resize_page_rotate_crop.png
+				var cropString:String = String("").concat(
+//					"-define,distort:viewport=,",AppData.savedImgOprOV.cW,"x",AppData.savedImgOprOV.cH,
+//					AppData.savedImgOprOV.oX,AppData.savedImgOprOV.oY,
+					"-resize,",AppData.savedImgOprVO.resizeWidth,"x",AppData.savedImgOprVO.resizeHeight,
+					",-rotate,",AppData.savedImgOprVO.r,
+					",+repage,-page,",AppData.savedImgOprVO.pageWidth,"x",AppData.savedImgOprVO.pageHeight,
+					AppData.savedImgOprVO.offsetPx,AppData.savedImgOprVO.offsetPy,
+					",-crop,",AppData.savedImgOprVO.cropWidth,"x",AppData.savedImgOprVO.cropHeight,
+					AppData.savedImgOprVO.offsetCx,AppData.savedImgOprVO.offsetCy,
+					",-background,white,-flatten"
+//					",-distort SRT,",AppData.savedImgOprOV.r
+//					",-geometry,", AppData.savedImgOprOV.cW,"x",AppData.savedImgOprOV.cH,
+//					AppData.savedImgOprOV.gX,AppData.savedImgOprOV.gY
+				);
+				trace("ImageMagick-crop(pageViewPoint) string:",cropString);
+				//Crop the origianl photo with ImageMagick
+				var exePath:String = "convert.exe";
+				var facts:ImageMagickFacts = new ImageMagickFactsBuilder(AppData.uploadedImageFile.nativePath,AppData.savedImageFie.nativePath)
+					.with_command(cropString)
+					.build();
+				//Execute the ImageMagick native process here.
+				as3ImageMagick = new AS3ImageMagick(exePath,facts);
+				//
+				as3ImageMagick.start();
+				//Event listeners to the ImageMagick.
+				as3ImageMagick.addEventListener(ImageMagickEvent.STANDARD_OUTPUT_DATA, dataHandler); 
+				as3ImageMagick.addEventListener(ImageMagickEvent.STANDARD_ERROR_DATA, errorDataHandler); 
+				as3ImageMagick.addEventListener(ImageMagickEvent.STANDARD_OUTPUT_CLOSE,outputCloseHandler);
+				//
+				var dataBytes:ByteArray = new ByteArray();
+				var errorBytes:ByteArray = new ByteArray();
+				//
+				function dataHandler(event:ProgressEvent):void
+				{ 
+					trace("dataHandler(event):",event.toString());
+					var bytes:IDataInput = process.standardOutput as IDataInput;
+		            var outputString: String = bytes.readUTFBytes(bytes.bytesAvailable).toString();
+		            trace(outputString);
+				}
+				function errorDataHandler(event:ProgressEvent):void
+				{ 
+					trace("errorDataHandler(event):",event.toString());
+					var bytes:IDataInput = process.standardError as IDataInput;
+					            var outputString: String = bytes.readUTFBytes(bytes.bytesAvailable).toString();
+					//					            trace("errorDataHandler:",outputString);
+					//					errorBytes.writeBytes(process.standardError.readBytes(process.standardError.bytesAvailable)); 
+					//					trace("errorBytes:",errorBytes.toString());
+				}
+				function outputCloseHandler(event:Event):void
+				{
+					trace("outputCloseHandler:",event.toString());
+					//Load result file's bitmapdata
+					trace("AppData.savedImageFie.nativePath:",AppData.savedImageFie.nativePath);
+					var req:URLRequest = new URLRequest(AppData.savedImageFie.nativePath);
+					var ldr:Loader = new Loader();
+					ldr.contentLoaderInfo.addEventListener(Event.COMPLETE, completeHandler);
+					ldr.load(req);
+					function completeHandler(event:Event):void {
+						var ldr:Loader = Loader(event.target.loader);
+						var b:Bitmap = Bitmap(ldr.content);
+						AppData.savedImageBitmapData = b.bitmapData;
+						//Then go to next view.
+						AppData.mainApp.id_viewStack.selectedIndex = AppData.VIEW_VERIFING;	
+					}
+				}
+			}
+			
+			protected function renderCroppedImg():void
+			{
+				/* var _x:int = Math.max(0, (img_masked.x - img_original.x));
+				var _y:int = Math.max(0, (img_masked.y - img_original.y)); */
+				var _x:int = this.id_group_uit.x - (this.id_group_edit.width-this.id_group_image.width)/2;
+				var _y:int = this.id_group_uit.y - (this.id_group_edit.height-this.id_group_image.height)/2;
+				//
+//				_x += this.id_image_edit_offsetX;
+//				_y += this.id_image_edit_offsetY;
+				var maskRec:Rectangle = new Rectangle(_x, _y, _maskWidth, _maskHeight);
+				
+				if(_maskWidth > 0 && _maskHeight > 0)
+					this.id_image_masked.source = new Bitmap(clipFromBitMapData(maskRec), 'auto', true);
+				//
+//				this.redrawPreview(0);
+				//Update offset value.
+				AppData.savedImgOprVO.tX = this.cropperOffsetX;
+				AppData.savedImgOprVO.tY = this.cropperOffsetY;
+				trace("(after renderCroppedImg)AppData.savedImageOperation:",AppData.savedImgOprVO);
+			}
+			
+			private function clipFromBitMapData(rec:Rectangle):BitmapData
+			{
+				if(id_image_edit.content == null) return null;
+				//Crop bitmapdata.
+				var transMatrix:Matrix = new Matrix();
+				transMatrix.scale(AppData.savedImgOprVO.iScaleX * this.id_vslider_scale.value, AppData.savedImgOprVO.iScaleY* this.id_vslider_scale.value);
+//				transMatrix.translate(-rec.width/2,-rec.height/2);
+//				transMatrix.rotate(this.id_vslider_rotate.value);
+//				transMatrix.translate(rec.width/2,rec.height/2);
+				var bitMapData:BitmapData = new BitmapData(id_image_edit.width, id_image_edit.height, true);
+//				bitMapData.draw(id_image_edit.content, transMatrix);
+				bitMapData.drawWithQuality(id_image_edit.content, transMatrix,null,null,null,true,StageQuality.BEST);
+				
+				var maskedBitMapData:BitmapData = new BitmapData(_maskWidth, _maskHeight);
+				maskedBitMapData.copyPixels(bitMapData, rec, new Point());
+				return maskedBitMapData;
+			}
+			
+			protected function get _maskWidth():Number
+			{
+				return this.id_image_masked.width;
+			}
+			
+			protected function get _maskHeight():Number
+			{
+				return this.id_image_masked.height;
+			}
+			
+			////
+			// draws the preview in the bottom right corner
+			protected function id_group_resizeHandler(event:ResizeEvent):void
+			{
+				id_group_preview.scaleX = event.oldWidth/id_image_edit.width;
+				id_group_preview.scaleY = event.oldHeight/id_image_edit.height;
+			}
+			
+			protected function id_uit_tool_preview_transformationHandler(event:TransformEvent):void
+			{
+				//				trace("toolData.matrix(transformation):",event.toolData.matrix);
+				trace("id_uit_tool_preview_transformationHandler->data.matrix(transformation):",event.data.matrix);
+				_id_image_edit_offsetX = event.data.matrix.tx * this.id_group_edit.width/this.id_border_contaniner.width;
+				_id_image_edit_offsetY = event.data.matrix.ty * this.id_group_edit.height/this.id_border_contaniner.height;
+				//
+				id_image_edit.x = _id_image_edit_offsetX;
+				id_image_edit.y = _id_image_edit_offsetY;
+				//Update cropper
+				this.renderCroppedImg();
+			}
+			///
+			private var _id_image_edit_offsetX:Number;
+			protected function get id_image_edit_offsetX():Number
+			{
+				return _id_image_edit_offsetX;
+			}
+			private var _id_image_edit_offsetY:Number;
+			protected function get id_image_edit_offsetY():Number
+			{
+				return _id_image_edit_offsetY;
+			}
+		]]>
+	</fx:Script>
+	<fx:Declarations>                                                                                                     
+		<fx:Component className="VGuideLine">
+			<s:Line alpha="0.1" y="45" height="230">
+				<s:stroke>
+					<s:SolidColorStroke/>
+				</s:stroke>
+			</s:Line>
+		</fx:Component>                                       
+		<fx:Component className="HGuideLine">
+			<s:Line alpha="0.1" x="30" width="400">
+				<s:stroke>
+					<s:SolidColorStroke/>
+				</s:stroke>
+			</s:Line>
+		</fx:Component>                                       
+		<fx:Component className="RGuideLine">
+			<s:Line>
+				<fx:Script>
+					<![CDATA[
+						import com.vstyran.transform.utils.TransformUtil;
+						
+						import mx.core.UIComponent;
+						import spark.components.Group;
+						
+						public function update(target:UIComponent, passiveGuideGroup:Group):void
+						{
+							var m:Matrix = TransformUtil.getMatrix(target, passiveGuideGroup);
+							
+							var stPoimt:Point =  m.transformPoint(new Point(target.width/2, target.height/2));
+							var endPoimt:Point =  m.transformPoint(new Point(target.width, target.height/2));
+							this.xFrom = stPoimt.x;
+							this.yFrom = stPoimt.y;
+							this.xTo = endPoimt.x;
+							this.yTo = endPoimt.y;
+						}
+					]]>
+				</fx:Script>
+				<s:stroke>
+					<s:SolidColorStroke color="#AA0000"/>
+				</s:stroke>
+			</s:Line>
+		</fx:Component>                                       
+	</fx:Declarations>               
+	
+	<s:BorderContainer width="100%" height="100%" contentBackgroundAlpha="0"
+					   backgroundImage="{viewBackgroundImage}"
+					   >
+		<components:HW_List_Cert id="id_list" change="id_list_changeHandler(event)" />
+		
+		<s:Image id="id_image_instruction" x="200" y="60" cachePolicy="off"/>
+			
+		<s:Group id="id_group_edit" clipAndEnableScrolling="false" width="680" height="540" x="320" y="182">
+			
+			<s:Group id="id_group_image" width="500" height="500" horizontalCenter="0" verticalCenter="0" clipAndEnableScrolling="true">
+				<mx:Image id="id_image_edit" maintainAspectRatio="true" resize="id_group_resizeHandler(event)" 
+						  smoothBitmapContent="true"/>
+			</s:Group>
+			
+			<s:BorderContainer id="id_shadowContainer" backgroundColor="#B2BCB5" backgroundAlpha="0.8" width="100%" height="100%" >
+				<s:filters>
+					<s:BlurFilter blurX="5.0" blurY="5.0" />
+				</s:filters>
+			</s:BorderContainer>
+			
+			<s:Group id="id_group_uit" clipAndEnableScrolling="false" maxHeight="{id_image_edit.height}" maxWidth="{id_image_edit.width}">
+				<mx:Image id="id_image_masked" width="100%" height="100%" horizontalCenter="0" verticalCenter="0" mouseChildren="false"/>
+				<!--<s:Image id="id_image_frame" enabled="false" width="100%" height="100%"/>-->
+				<s:Image id="id_image_guide" enabled="false" width="100%" height="100%"/>
+			</s:Group>
+			
+		</s:Group>
+		
+		<!--<s:Image id="id_image_mask" x="{id_image_frame.x}" y="{id_image_frame.y}" enabled="false"/>-->
+		<!--guidelinesUpdate="tool_guidelinesUpdateHandler(event)"-->
+		<view:UITransformTool id="id_uit_cropper" skinClass="skins.uiTransformTool.TransformToolSkin_Edit" 
+							  transformationComplete="tool_transformationCompleteHandler(event)"
+							  transformation="tool_transformationHandler(event)"
+							  maintainProjectionCenter="true" maintainMoveShortcuts="true"
+							  >
+			<view:bounds>
+				<model:Bounds id="id_bounds_uit" width="{this.id_group_image.width}" height="{this.id_group_image.height}"/>
+			</view:bounds>
+			<!--<view:guidelines>
+				<model:Guideline type="{GuidelineType.HORIZONTAL_CENTER}" value="400" fraction="3"/>
+				<model:Guideline type="{GuidelineType.VERTICAL_CENTER}" value="300" fraction="3"/>
+			</view:guidelines>-->
+			
+		</view:UITransformTool>
+		
+		
+		<s:Button x="33" y="500" label="RE_UPLOAD" skinClass="skins.button.HW_Back2UploadButton_Skin" click="reupload_button_clickHandler(event)" buttonMode="true" useHandCursor="true"/>
+		<s:Button x="155" y="500" label="EDIT_NEXT" skinClass="skins.button.HW_EditorNextButton_Skin" click="editnext_button_clickHandler(event)" buttonMode="true" useHandCursor="true"/>
+		<spark:VSlider id="id_vslider_rotate" x="922" y="220" 
+					   showTrackHighlight="true" skinClass="skins.slider.HW_EditorScaleVSlider_Skin"
+				   change="onEditorRotateSliderChange(event)" stepSize="90" minimum="-180" maximum="180" value="0"
+				   height="250"
+				   />
+		<s:Label x="925" y="475" text="{this.id_vslider_rotate.value.toString().concat('°')}" color="white"/>
+		
+		<s:Button x="911" y="182" label="ROTATE" skinClass="skins.button.HW_RotateButton_Skin" click="rotate90ButtonClickHandler(event)" enabled="false"/>
+		<s:Button x="851" y="182" label="ZOOM_IN" skinClass="skins.button.HW_ZoomInButton_Skin" click="zoomInButtonClickHandler(event)" enabled="false"/>
+		<s:Button x="625" y="373" label="ZOOM_OUT" skinClass="skins.button.HW_ZoomOutButton_Skin" click="zoomOutButtonClickHandler(event)" visible="false" includeInLayout="false"/>
+		<spark:VSlider id="id_vslider_scale" x="862" y="220"
+					   showTrackHighlight="true" skinClass="skins.slider.HW_EditorScaleVSlider_Skin"
+				   change="onEditorScaleSliderChange(event)" stepSize="0.1" minimum="0.5" maximum="4" value="1"
+				   height="250" 
+				   />
+		<s:Label x="863" y="475" text="{(this.id_vslider_scale.value*100).toString().concat('%')}" color="white"/>
+		
+		<s:Group id="id_border_contaniner" x="887" y="610" width="100" height="100">
+			<s:Group clipAndEnableScrolling="true" horizontalCenter="0" verticalCenter="0">
+				<mx:Image source="{this.id_image_edit.source}" width="{this.id_border_contaniner.width}" height="{this.id_border_contaniner.height}"/>
+			</s:Group>
+			<s:BorderContainer backgroundColor="#FEFEFE" backgroundAlpha="0.2" width="100%" height="100%" >
+				<s:filters>
+					<s:BlurFilter blurX="1.0" blurY="1.0" />
+				</s:filters>
+			</s:BorderContainer>
+			<s:Group id="id_group_preview" width="50" height="50" alpha="0.5" horizontalCenter="0"
+					 scaleX="{1.0/this.id_vslider_scale.value}"
+					 scaleY="{1.0/this.id_vslider_scale.value}" verticalCenter="0"/>
+		</s:Group>
+		
+		<view:UITransformTool id="id_uit_tool_preview" skinClass="skins.uiTransformTool.TransformToolSkin_Preview" 
+							  maintainProjectionCenter="true" maintainMoveShortcuts="true"
+							  transformation="id_uit_tool_preview_transformationHandler(event)"
+							  target="{this.id_group_preview}"
+							  >
+			<view:bounds>
+				<model:Bounds x="{this.id_border_contaniner.x}" y="{this.id_border_contaniner.y}" width="{this.id_border_contaniner.width}" height="{this.id_border_contaniner.height}"/>
+			</view:bounds>
+			<!--<view:guidelines>
+			<model:Guideline type="{GuidelineType.HORIZONTAL_CENTER}" value="400" fraction="3"/>
+			<model:Guideline type="{GuidelineType.VERTICAL_CENTER}" value="300" fraction="3"/>
+			</view:guidelines>-->
+			
+		</view:UITransformTool>
+		<!--		  
+		<s:Group id="passiveGuideGroup" top="0" bottom="0" left="0" right="0"/>
+		<s:Line id="vGuide" yFrom="{id_image_frame.y}" yTo="{id_image_frame.height}" depth="3" visible="true">
+			<s:stroke>
+				<s:SolidColorStroke color="#AA0000"/>
+			</s:stroke>
+		</s:Line>
+		<s:Line id="hGuide" xFrom="{id_image_frame.x}" xTo="{id_image_frame.width}" depth="3" visible="true">
+			<s:stroke>
+				<s:SolidColorStroke color="#AA0000"/>
+			</s:stroke>
+		</s:Line>
+		-->
+	</s:BorderContainer>
+	
+</views:ViewBase>

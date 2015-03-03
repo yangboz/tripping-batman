@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="utf-8"?>
+<views:ViewBase xmlns:fx="http://ns.adobe.com/mxml/2009" 
+				xmlns:s="library://ns.adobe.com/flex/spark" 
+				xmlns:mx="library://ns.adobe.com/flex/mx" 
+				width="100%" height="100%" 
+				xmlns:views="views.*"
+				xmlns:components="views.components.*" xmlns:controls="com.devaldi.controls.*"
+				>
+	<fx:Script>
+		<![CDATA[
+			import jp.maaash.ObjectDetection.ObjectDetector;
+			import jp.maaash.ObjectDetection.ObjectDetectorEvent;
+			import jp.maaash.ObjectDetection.ObjectDetectorOptions;
+			
+			import model.AppData;
+			
+			import mx.core.UIComponent;
+			import mx.events.FlexEvent;
+			import mx.managers.DragManager;
+			import mx.utils.ObjectUtil;
+			
+			import spark.events.IndexChangeEvent;
+			import spark.primitives.supportClasses.FilledElement;
+			
+			private var fileRef:File;
+//			private var fileRef:FileReference;
+			private var imagesFilter:FileFilter = new FileFilter("Images", "*.jpg;*.gif;*.png");
+			//
+			
+			override protected function id_list_changeHandler(event:IndexChangeEvent):void
+			{
+				super.id_list_changeHandler(event);
+				///Upldate UI images.
+				this.updateImageViews();
+			}
+			
+			override public function creationCompleteHandler(event:FlexEvent):void
+			{
+				//register for the drag enter event
+				addEventListener(NativeDragEvent.NATIVE_DRAG_ENTER, onNativeDragEnter);
+				
+				//register for the drag drop event
+				addEventListener(NativeDragEvent.NATIVE_DRAG_DROP, onNativeDragDrop);
+				///Upldate UI images.
+				this.updateImageViews();
+			}
+			
+			override public function get viewBackgroundImage():Bitmap
+			{
+				return new AppData.BG_IMG_01() as Bitmap;
+			}
+			
+			protected function upload_button_clickHandler(event:MouseEvent):void
+			{
+				this.fileRef = new File();
+				this.fileRef.browseForOpen("Open",[imagesFilter]);
+//				fileRef = new FileReference();
+//				fileRef.addEventListener(Event.SELECT, fileRef_select);
+//				fileRef.addEventListener(ProgressEvent.PROGRESS, fileRef_progress);
+//				fileRef.addEventListener(Event.COMPLETE, fileRef_complete);
+//				fileRef.browse([imagesFilter]);
+				fileRef.addEventListener(Event.SELECT, fileRef_select);
+				fileRef.addEventListener(ProgressEvent.PROGRESS, fileRef_progress);
+				fileRef.addEventListener(Event.COMPLETE, fileRef_complete);
+			}
+			///
+			private function fileRef_select(event:Event):void 
+			{
+//				trace(event);
+				AppData.uploadedImageFile = event.target as File;
+//				AppData.uploadedImageFile = event.target
+				this.imageAttributeCheck();
+			}
+			
+			private function fileRef_progress(event:ProgressEvent):void 
+			{
+//				trace(event);
+			}
+			
+			private function fileRef_complete(event:Event):void 
+			{
+//				trace(event);
+			}
+			
+			//called when the user drags an item into the component area
+			private function onNativeDragEnter(event:NativeDragEvent):void
+			{
+				//check and see if files are being drug in
+				if(event.clipboard.hasFormat(ClipboardFormats.FILE_LIST_FORMAT))
+				{
+					//accept the drag action
+					DragManager.acceptDragDrop(UIComponent(event.currentTarget));
+				}
+			}
+			
+			//called when the user drops an item over the component
+			private function onNativeDragDrop(event:NativeDragEvent):void
+			{
+				var fileList:Array = event.clipboard.getData(ClipboardFormats.FILE_LIST_FORMAT) as Array;
+				AppData.uploadedImageFile = fileList[0] as File;
+//				trace(AppData.uploadedImageFile);//TODO:navtive file upload function.
+				//
+				this.imageAttributeCheck();
+			}
+			
+			public function updateImageViews():void
+			{
+				//
+				this.id_image_instruction.source = AppData.ARRAY_INS_CERT_TEXTS[AppData.selectedCertSizeIndex];
+				//
+				this.id_image_frame.source = AppData.ARRAY_UPLOAD_PHOTO_FRAMES[AppData.selectedCertSizeIndex];
+				this.id_image_guide.source = AppData.ARRAY_UPLOAD_PHOTO_GUIDES[AppData.selectedCertSizeIndex];
+				this.id_image_notice.source = AppData.ARRAY_UPLOAD_PHOTO_NOTICES[AppData.selectedCertSizeIndex];
+			}
+			
+			private function imageAttributeCheck():void
+			{
+				//ImageAttributeCheck
+				///File size
+				var requiredFileSizeMin:Number = (AppData.ARRAY_UPLOAD_FILE_SIZES[AppData.selectedCertSizeIndex] as Point).x;
+				var requiredFileSizeMax:Number = (AppData.ARRAY_UPLOAD_FILE_SIZES[AppData.selectedCertSizeIndex] as Point).y;
+				var uploadImageFileSize:Number = AppData.uploadedImageFile.size;
+				trace("uploadImageFileSize:",uploadImageFileSize);
+				if(uploadImageFileSize<requiredFileSizeMin)
+				{
+					return AppData.popup_image_verify_result(AppData.NOTIFY_IMG_VERIFY_RESULT_0);
+				}
+				//
+//				this.id_image_upload.source = AppData.uploadedImageFile.nativePath;
+				///TODO:Facial number check
+				//Copy file to workspace
+				AppData.uploadedImageFileCopy = File.createTempDirectory().resolvePath("copy_".concat(AppData.uploadedImageFile.name));
+				AppData.uploadedImageFile.copyTo(AppData.uploadedImageFileCopy as FileReference);
+				//
+				this.id_image_upload.source = AppData.uploadedImageFile.nativePath;
+				this.id_image_upload.addEventListener(Event.COMPLETE,loadImageCompleteHandler);
+				function loadImageCompleteHandler(event:Event):void
+				{
+					AppData.uploadFileBitmapData = id_image_upload.bitmapData.clone();
+					trace("AppData.uploadFileBitmapData:", ObjectUtil.toString(AppData.uploadFileBitmapData) );
+					//
+					AppData.mainApp.id_viewStack.selectedIndex = AppData.VIEW_EIDTOR;
+					//Avoid back cache issue.
+					id_image_upload.source = "";
+					//
+					id_image_upload.removeEventListener(Event.COMPLETE,loadImageCompleteHandler);
+				}
+			}
+			
+			private function faceDetection(target:Image,display:Boolean):int
+			{
+				var faceNumbers:int = 0;
+				////Init face detector
+				var detector:ObjectDetector = new ObjectDetector();
+				var options:ObjectDetectorOptions = new ObjectDetectorOptions();
+				options.min_size  = 30;
+				detector.options = options;
+				detector.addEventListener(ObjectDetectorEvent.DETECTION_COMPLETE,function( e :ObjectDetectorEvent ):void{
+					trace("[ObjectDetectorEvent.COMPLETE]");
+					//					tf.appendText( "\ntime: "+(new Date)+" "+e.type );
+					detector.removeEventListener( ObjectDetectorEvent.DETECTION_COMPLETE, arguments.callee );
+					
+					if( e.rects ){
+						var g :Graphics = id_faceRectContainer.graphics;
+						g.clear();
+						g.lineStyle( 2 );	// black 2pix
+						e.rects.forEach( function( r :Rectangle, idx :int, arr :Array ) :void {
+							g.drawRect( r.x, r.y, r.width, r.height );
+						});
+					}
+					//
+					faceNumbers = e.rects.length;
+				});
+				
+				detector.addEventListener( ObjectDetectorEvent.DETECTION_START, function(e :ObjectDetectorEvent) :void {
+					trace( "\ntime: "+(new Date)+" "+e.type );
+				});
+				var bmpTarget:Bitmap = new Bitmap( new BitmapData( target.sourceWidth, target.sourceHeight, false ) )
+				bmpTarget.bitmapData.draw( id_image_upload );
+				detector.detect( bmpTarget.bitmapData );
+				//
+				return faceNumbers;
+			}
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<s:BorderContainer width="100%" height="100%" contentBackgroundAlpha="0"
+					   backgroundImage="{viewBackgroundImage}"
+					   >
+		<components:HW_List_Cert id="id_list" change="id_list_changeHandler(event)"/>
+		
+		<s:Image id="id_image_instruction" x="200" y="60"/>
+		
+		<s:VGroup x="410" y="190" horizontalAlign="center">
+			<s:Group>
+				<s:Image id="id_image_frame" />
+				<s:Image id="id_image_guide" />
+				<s:Image id="id_image_notice" />
+			</s:Group>
+		</s:VGroup>
+		
+		<s:Button bottom="100" width="120" height="30" label="Upload"
+				  click="upload_button_clickHandler(event)" horizontalCenter="80"
+				  skinClass="skins.button.HW_UploadButton_Skin" 
+				  buttonMode="true" useHandCursor="true"/>
+		<s:SpriteVisualElement id="id_faceRectContainer"/>
+		<s:Image id="id_image_upload" x="410" y="190" visible="{id_image_upload.source}"/>
+		
+	</s:BorderContainer>
+	
+</views:ViewBase>

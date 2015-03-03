@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="100%"
+		 creationComplete="creationCompleteHandler(event)" xmlns:components="views.components.*"
+		 >
+	<s:layout>
+		<s:VerticalLayout/>
+	</s:layout>
+	<fx:Script>
+		<![CDATA[
+			import model.AppData;
+			
+			import mx.events.FlexEvent;
+			
+			import spark.events.IndexChangeEvent;
+			
+			public function get viewBackgroundImage():Bitmap
+			{
+				return new AppData.BG_IMG_00() as Bitmap;
+			}
+			////FIXME: @see http://www.misho.ca/flex-4-viewstack-page-navigation-part-one/
+			public function creationCompleteHandler(event:FlexEvent):void
+			{
+				//To be override.
+			}
+			
+			protected function id_list_changeHandler(event:IndexChangeEvent):void
+			{
+				AppData.selectedCertSizeIndex = event.newIndex;
+			}
+			
+			protected function getRequiredCertPhotoWidth():Number
+			{
+				return (AppData.ARRAY_SIZE_CERTS[AppData.selectedCertSizeIndex] as Point).x;
+			}
+			
+			protected function getRequiredCertPhotoHeight():Number
+			{
+				return (AppData.ARRAY_SIZE_CERTS[AppData.selectedCertSizeIndex] as Point).y;
+			}
+			
+			protected function getRequiredTillingImageX():Number
+			{
+				return AppData.ARRAY_TYPESET_TILE_POINT[AppData.selectedTypesetSizeIndex][AppData.selectedCertSizeIndex].x;
+			}
+			
+			protected function getRequiredTillingImageY():Number
+			{
+				return AppData.ARRAY_TYPESET_TILE_POINT[AppData.selectedTypesetSizeIndex][AppData.selectedCertSizeIndex].y;
+			}
+		]]>
+	</fx:Script>
+	<s:BorderContainer width="100%" height="100%" contentBackgroundAlpha="0"
+					   backgroundImage="{viewBackgroundImage}"
+					   >
+		
+		
+	</s:BorderContainer>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+</s:Group>

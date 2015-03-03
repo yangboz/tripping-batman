@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009"
+				xmlns:s="library://ns.adobe.com/flex/spark"
+				xmlns:mx="library://ns.adobe.com/flex/mx" 
+				autoDrawBackground="false" xmlns:components="views.components.*"
+				>
+	
+	<fx:Script>
+		<![CDATA[
+			import model.AppData;
+			
+			import mx.events.FlexEvent;
+			import mx.utils.ObjectUtil;
+			
+			import utils.MatrixTransformer;
+			
+			protected function id_image_completeHandler(event:Event):void
+			{
+//				this.id_image.scaleX = AppData.savedImageMatrix.a;
+//				this.id_image.scaleY = AppData.savedImageMatrix.d;
+//				this.id_image.x = data.x;
+//				this.id_image.y = data.y;
+//				var sourceMatrix:Matrix = new Matrix();
+//				sourceMatrix.concat(AppData.mainApp.id_eitor_view.id_image_edit.transform.matrix);
+//				var tempMatrix:Matrix =  MatrixTransformer.transform(sourceMatrix,data.sX,data.sY,sourceMatrix.a,sourceMatrix.d,data.r);
+//				this.id_image.transform.matrix = tempMatrix;
+			}
+			/*
+			import views.components.ImageWithBorder;
+			
+			private var id_image:ImageWithBorder = null;
+			
+			override public function set data( value:Object ) : void 
+			{
+				if(value)
+				{
+					if(this.id_image)
+					{
+						this.id_group.removeElement(id_image);
+						this.id_image = null;
+					}
+					id_image = new ImageWithBorder();
+					this.id_group.addElement(id_image);
+					//
+					id_image.source = value.source;
+					id_image.addEventListener(Event.COMPLETE,id_image_completeHandler);
+					id_image.setStyle("horizontalAlign","left");
+					id_image.setStyle("verticalAlign","top");
+				}
+				super.data  = value;
+			}
+			*/
+		]]>
+	</fx:Script>
+	
+	
+	<!--<s:states>
+		<s:State name="normal" />
+		<s:State name="hovered" />
+	</s:states>-->
+	
+	<!--<s:postLayoutTransformOffsets>
+		<mx:TransformOffsets id="offsets" x.hovered="-25" y.hovered="-50" scaleX.hovered="2" scaleY.hovered="2" />
+	</s:postLayoutTransformOffsets>    
+	
+	<s:transitions>
+		<mx:Transition fromState="normal" toState="hovered" autoReverse="true">
+			<s:Animate target="{offsets}" duration="300">
+				<s:SimpleMotionPath property="scaleX" />
+				<s:SimpleMotionPath property="scaleY" />
+				<s:SimpleMotionPath property="x" />
+				<s:SimpleMotionPath property="y" />
+			</s:Animate>
+		</mx:Transition>
+		<mx:Transition fromState="hovered" toState="normal" autoReverse="true">
+			<s:Animate target="{offsets}" duration="300">
+				<s:SimpleMotionPath property="scaleX" />
+				<s:SimpleMotionPath property="scaleY" />
+				<s:SimpleMotionPath property="x" />
+				<s:SimpleMotionPath property="y" />
+			</s:Animate>
+		</mx:Transition>
+	</s:transitions>    -->
+	<!--x="{data.x}" y="{data.y}" scaleX="{data.sX}" scaleY="{data.sY}" rotation="{data.r}"-->
+	<!--<s:Rect width="100%" height="100%">
+		<s:fill>
+			<s:BitmapFill source="@Embed('/assets/images/background/dot.png')" fillMode="repeat"/>
+		</s:fill>
+	</s:Rect>-->
+	<components:ImageWithBorder id="id_image" 
+								source="{data.source}"
+								borderAlpha="1"
+								borderWidth="7"
+								borderColor="black"
+								horizontalCenter="0" verticalCenter="0" 
+								smoothBitmapContent="true"
+								scaleX="{data.sX}" scaleY="{data.sY}" rotation="{data.r}"
+								/>
+	<!--<s:BorderContainer color="black" borderWeight="5" borderStyle="inset"> </s:BorderContainer>-->
+	<!--<s:Group id="id_group" clipAndEnableScrolling="true" width="{data.w}" height="{data.h}" >
+		<components:ImageWithBorder id="id_image" 
+			source="{data.source}"
+			borderAlpha="1"
+			borderWidth="5"
+			borderColor="black"
+			horizontalCenter="0" verticalCenter="0" 
+		    smoothBitmapContent="true"
+		    complete="id_image_completeHandler(event)"
+		    cachePolicy="off"
+		/>
+	</s:Group>-->
+</s:ItemRenderer>

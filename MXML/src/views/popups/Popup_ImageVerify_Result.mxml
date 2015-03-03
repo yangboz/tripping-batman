@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<components:PopupBase xmlns:components="views.components.*"
+					  xmlns:fx="http://ns.adobe.com/mxml/2009"
+					  xmlns:s="library://ns.adobe.com/flex/spark"
+					  backgroundAlpha="0" show="popupbase_showHandler(event)">
+	<fx:Script>
+		<![CDATA[
+			import flash.utils.setTimeout;
+			
+			import model.AppData;
+			
+			import mx.events.FlexEvent;
+			
+			protected function popupbase_showHandler(event:FlexEvent):void
+			{
+				flash.utils.setTimeout(close,2000);//Auto dismiss
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<s:BorderContainer id="id_borderContainer" width="188" height="44"
+					   borderAlpha="0" backgroundImage="{AppData.NOTIFY_IMG_VERIFY_RESULT_0}">
+	</s:BorderContainer>
+</components:PopupBase >
