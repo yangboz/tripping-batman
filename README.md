@@ -57,4 +57,5 @@ http://www.flintfabrik.de/pgs/starling/FFParticleSystem
 
 https://github.com/Gamua/Starling-Extension-Particle-System
 
+http://onebyonedesign.com/flash/particleeditor/
 
