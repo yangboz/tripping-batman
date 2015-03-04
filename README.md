@@ -6,7 +6,7 @@ BMW CRM: https://github.com/yangboz/drunken-octo-cyril
 
 GM WholeSaleSystem: https://github.com/yangboz/yolo-octo-hipster
 
-# Staring
+# Starling
 http://gamua.com/starling/
 # Staring Extension
 http://wiki.starling-framework.org/extensions/start
