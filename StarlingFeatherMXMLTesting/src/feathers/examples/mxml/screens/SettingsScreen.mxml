@@ -50,5 +50,6 @@
 		{
 			this.dispatchEventWith(starling.events.Event.COMPLETE);
 		}
-		]]></fx:Script>
+		
+	]]></fx:Script>
 </feathers:PanelScreen>

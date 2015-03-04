@@ -2,11 +2,8 @@
 <feathers:PanelScreen xmlns:fx="http://ns.adobe.com/mxml/2009" 
 					  xmlns:feathers="feathers.controls.*" 
 					  xmlns:layout="feathers.layout.*" xmlns:data="feathers.data.*"
+					  creationComplete="panelscreen_creationCompleteHandler(event)"
 					  >
-
-	<fx:Metadata>
-		[Event(name="SETTINGS",type="starling.events.Event")]
-	</fx:Metadata>
 
 	<feathers:layout>
 		<layout:AnchorLayout/>
@@ -25,14 +22,16 @@
 		</fx:Object>
 	</feathers:headerProperties>
 
-	<feathers:List>
+	<feathers:List change="list_changeHandler(event)">
 		<feathers:layoutData>
 			<layout:AnchorLayoutData top="0" right="0" bottom="0" left="0"/>
 		</feathers:layoutData>
 		<feathers:dataProvider>
 			<data:ListCollection>
 				<fx:Array>
-					<fx:Object label="Sample"/>
+					<fx:Object label="点状效果" />
+					<fx:Object label="线条效果"/>
+					<fx:Object label="泼墨效果"/>
 				</fx:Array>
 			</data:ListCollection>
 		</feathers:dataProvider>
@@ -42,11 +41,25 @@
 	</feathers:List>
 
 	<fx:Script><![CDATA[
+		import assets.EmbedAssets;
+		
 		import feathers.controls.Button;
-		import feathers.examples.mxml.consts.GlobalConsts;
 		import feathers.examples.mxml.consts.GlobalVariables;
 		
+		import starling.core.Starling;
 		import starling.events.Event;
+		import starling.events.KeyboardEvent;
+		import starling.events.Touch;
+		import starling.events.TouchEvent;
+		import starling.events.TouchPhase;
+		import starling.extensions.PDParticleSystem;
+		import starling.extensions.ParticleSystem;
+		import starling.textures.Texture;
+		
+		// member variables
+		
+		private var mParticleSystems:Vector.<ParticleSystem>;
+		private var mParticleSystem:ParticleSystem;
 		
 		private function navButton_triggeredHandler(event:starling.events.Event):void
 		{
@@ -54,6 +67,94 @@
 //			this.dispatchEventWith(eventName);
 			GlobalVariables.screenNavigator.showScreen(eventName);
 		}
+		
+		protected function list_changeHandler(event:starling.events.Event):void
+		{
+			trace((event.target as List).selectedIndex);
+		}
 
+		protected function panelscreen_creationCompleteHandler(event:starling.events.Event):void
+		{
+			var drugsConfig:XML = XML(new EmbedAssets.DrugsConfig());
+			var drugsTexture:Texture = Texture.fromBitmap(new EmbedAssets.DrugsParticle());
+			
+			var fireConfig:XML = XML(new EmbedAssets.FireConfig());
+			var fireTexture:Texture = Texture.fromBitmap(new EmbedAssets.FireParticle());
+			
+			var sunConfig:XML = XML(new EmbedAssets.SunConfig());
+			var sunTexture:Texture = Texture.fromBitmap(new EmbedAssets.SunParticle());
+			
+			var jellyConfig:XML = XML(new EmbedAssets.JellyfishConfig());
+			var jellyTexture:Texture = Texture.fromBitmap(new EmbedAssets.JellyfishParticle());
+			
+			mParticleSystems = new <ParticleSystem>[
+				new PDParticleSystem(drugsConfig, drugsTexture),
+				new PDParticleSystem(fireConfig, fireTexture),
+				new PDParticleSystem(sunConfig, sunTexture),
+				new PDParticleSystem(jellyConfig, jellyTexture)
+			];
+			
+			// add event handlers for touch and keyboard
+			
+//			addEventListener(flash.events.Event.ADDED_TO_STAGE, onAddedToStage);
+//			addEventListener(flash.events.Event.REMOVED_FROM_STAGE, onRemovedFromStage);
+			
+			//
+			stage.addEventListener(starling.events.KeyboardEvent.KEY_DOWN, onKey);
+			stage.addEventListener(starling.events.TouchEvent.TOUCH, onTouch);
+			
+			startNextParticleSystem();
+		}
+		
+		private function startNextParticleSystem():void
+		{
+			if (mParticleSystem)
+			{
+				mParticleSystem.stop();
+				mParticleSystem.removeFromParent();
+				Starling.juggler.remove(mParticleSystem);
+			}
+			
+			mParticleSystem = mParticleSystems.shift();
+			mParticleSystems.push(mParticleSystem);
+			
+			mParticleSystem.emitterX = 320;
+			mParticleSystem.emitterY = 240;
+			mParticleSystem.start();
+			
+			addChild(mParticleSystem);
+			Starling.juggler.add(mParticleSystem);
+		}
+		
+		private function onAddedToStage(event:flash.events.Event):void
+		{
+			stage.addEventListener(starling.events.KeyboardEvent.KEY_DOWN, onKey);
+			stage.addEventListener(starling.events.TouchEvent.TOUCH, onTouch);
+			
+			startNextParticleSystem();
+		}
+		
+		private function onRemovedFromStage(event:flash.events.Event):void
+		{
+			stage.removeEventListener(starling.events.KeyboardEvent.KEY_DOWN, onKey);
+			stage.removeEventListener(starling.events.TouchEvent.TOUCH, onTouch);
+		}
+		
+		private function onKey(event:starling.events.KeyboardEvent, keyCode:uint):void
+		{
+			if (keyCode == Keyboard.SPACE)
+				startNextParticleSystem();
+		}
+		
+		private function onTouch(event:starling.events.TouchEvent):void
+		{
+			var touch:Touch = event.getTouch(stage);
+			if (touch && touch.phase != TouchPhase.HOVER)
+			{
+				mParticleSystem.emitterX = touch.globalX;
+				mParticleSystem.emitterY = touch.globalY;
+			}
+		}
+		
 	]]></fx:Script>
 </feathers:PanelScreen>
