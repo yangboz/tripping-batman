@@ -23,7 +23,11 @@ Image graphic/Handle: http://proj.lamb-mei.com/handlesheet/
 
 Textfield/Font: https://github.com/binouze/HTMLBitmapFonts
 
-Animation: https://github.com/threerings/flump  https://github.com/Acemobe/SpriterAS3Anim
+Animation: 
+
+https://github.com/threerings/flump  https://github.com/Acemobe/SpriterAS3Anim
+
+http://wiki.starling-framework.org/manual/animation
 
 Layout: https://github.com/BenoitFreslon/benoitfreslon-layoutmanager
 
