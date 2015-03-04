@@ -5,7 +5,7 @@
 					  >
 
 	<fx:Metadata>
-		[Event(name="SETTINGS",type="starling.events.Event")]
+		[Event(name="complete",type="starling.events.Event")]
 	</fx:Metadata>
 
 	<feathers:layout>
@@ -13,15 +13,12 @@
 	</feathers:layout>
 
 	<feathers:headerProperties>
-		<fx:Object title="Feathers in MXML">
-			<fx:rightItems>
+		<fx:Object title="Photograph">
+			<fx:leftItems>
 				<fx:Vector type="starling.display.DisplayObject">
-					<feathers:Button label="Doodle" triggered="navButton_triggeredHandler(event)"/>
-					<feathers:Button label="Photograph" triggered="navButton_triggeredHandler(event)"/>
-					<feathers:Button label="Literal" triggered="navButton_triggeredHandler(event)"/>
-					<feathers:Button label="Settings" triggered="navButton_triggeredHandler(event)"/>
+					<feathers:Button label="Back" triggered="settingsButton_triggeredHandler(event)"/>
 				</fx:Vector>
-			</fx:rightItems>
+			</fx:leftItems>
 		</fx:Object>
 	</feathers:headerProperties>
 
@@ -32,7 +29,7 @@
 		<feathers:dataProvider>
 			<data:ListCollection>
 				<fx:Array>
-					<fx:Object label="Sample"/>
+					<fx:Object label="Photograph"/>
 				</fx:Array>
 			</data:ListCollection>
 		</feathers:dataProvider>
@@ -42,18 +39,12 @@
 	</feathers:List>
 
 	<fx:Script><![CDATA[
-		import feathers.controls.Button;
-		import feathers.examples.mxml.consts.GlobalConsts;
-		import feathers.examples.mxml.consts.GlobalVariables;
-		
 		import starling.events.Event;
-		
-		private function navButton_triggeredHandler(event:starling.events.Event):void
+
+		private function settingsButton_triggeredHandler(event:starling.events.Event):void
 		{
-			var eventName:String = String((event.target as Button).label).toLocaleUpperCase();
-//			this.dispatchEventWith(eventName);
-			GlobalVariables.screenNavigator.showScreen(eventName);
+			this.dispatchEventWith(starling.events.Event.COMPLETE);
 		}
 
-	]]></fx:Script>
+		]]></fx:Script>
 </feathers:PanelScreen>

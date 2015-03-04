@@ -31,52 +31,39 @@
  DEALINGS
  * IN THE SOFTWARE.
  */
-package feathers.examples.mxml
+package feathers.examples.mxml.consts
 {
 	//--------------------------------------------------------------------------
 	//
 	// Imports
 	//
 	//--------------------------------------------------------------------------
-	import flash.display.Sprite;
 	
-	import feathers.controls.ScreenNavigator;
-	import feathers.controls.ScreenNavigatorItem;
-	import feathers.examples.mxml.consts.GlobalConsts;
-	import feathers.examples.mxml.screens.SampleScreen;
-	import feathers.examples.mxml.screens.SettingsScreen;
-	import feathers.examples.mxml.screens.DoodleScreen;
-	import feathers.examples.mxml.screens.LiteralScreen;
-	import feathers.examples.mxml.screens.PhotographScreen;
-	import feathers.motion.transitions.ScreenSlidingStackTransitionManager;
-	import feathers.themes.MetalWorksMobileTheme;
-	
-	import starling.display.Sprite;
-	import starling.events.Event;
-	import starling.events.ResizeEvent;
-	
-	import feathers.examples.mxml.consts.GlobalVariables;
 	/**
-	 * Main.as MainEntry class. 
+	 * GlobalConsts.as class. 
 	 * @author yangboz
 	 * @langVersion 3.0
 	 * @playerVersion 11.2+
 	 * @airVersion 3.2+
-	 * Created Mar 4, 2015 12:06:00 PM
+	 * Created Mar 4, 2015 11:39:44 AM
 	 * @history 05/00/12,
 	 */ 
-	public class Main extends Sprite
+	public class GlobalConsts
 	{ 
 		//--------------------------------------------------------------------------
 		//
 		// Variables
 		//
 		//--------------------------------------------------------------------------
-//		private var _navigator:ScreenNavigator;
+		
 		//----------------------------------
 		// CONSTANTS
 		//----------------------------------
-		
+		public static const SCREEN_NAME_SAMPLE:String = "SAMPLE";
+		public static const SCREEN_NAME_SETTINGS:String = "SETTINGS";
+		public static const SCREEN_NAME_DOODLE:String = "DOODLE";
+		public static const SCREEN_NAME_PHOTOGRAPH:String = "PHOTOGRAPH";
+		public static const SCREEN_NAME_LITERAL:String = "LITERAL";
 		//--------------------------------------------------------------------------
 		//
 		// Public properties
@@ -96,11 +83,9 @@ package feathers.examples.mxml
 		// Constructor
 		//
 		//--------------------------------------------------------------------------
-		public function Main()
+		public function GlobalConsts()
 		{
-			this.addEventListener(Event.ADDED_TO_STAGE, addedToStageHandler);
-			this.addEventListener(Event.REMOVED_FROM_STAGE, removedFromStageHandler);
-		}
+		} 
 		//--------------------------------------------------------------------------
 		//
 		// Public methods
@@ -118,52 +103,6 @@ package feathers.examples.mxml
 		// Private methods
 		//
 		//--------------------------------------------------------------------------
-		private function addedToStageHandler(event:Event):void
-		{
-			new MetalWorksMobileTheme();
-			
-			this.stage.addEventListener(ResizeEvent.RESIZE, stage_resizeHandler);
-			
-			GlobalVariables.screenNavigator = new ScreenNavigator();
-			this.addChild(GlobalVariables.screenNavigator);
-			
-			GlobalVariables.screenNavigator.addScreen(GlobalConsts.SCREEN_NAME_SAMPLE, new ScreenNavigatorItem(SampleScreen,
-				{
-					settings: GlobalConsts.SCREEN_NAME_SETTINGS
-				}));
-			
-			GlobalVariables.screenNavigator.addScreen(GlobalConsts.SCREEN_NAME_SETTINGS, new ScreenNavigatorItem(SettingsScreen,
-				{
-					complete: GlobalConsts.SCREEN_NAME_SAMPLE
-				}));
-			GlobalVariables.screenNavigator.addScreen(GlobalConsts.SCREEN_NAME_DOODLE, new ScreenNavigatorItem(DoodleScreen,
-				{
-					complete: GlobalConsts.SCREEN_NAME_SAMPLE
-				}));
-			GlobalVariables.screenNavigator.addScreen(GlobalConsts.SCREEN_NAME_LITERAL, new ScreenNavigatorItem(LiteralScreen,
-				{
-					complete: GlobalConsts.SCREEN_NAME_SAMPLE
-				}));
-			GlobalVariables.screenNavigator.addScreen(GlobalConsts.SCREEN_NAME_PHOTOGRAPH, new ScreenNavigatorItem(PhotographScreen,
-				{
-					complete: GlobalConsts.SCREEN_NAME_SAMPLE
-				}));
-			
-			new ScreenSlidingStackTransitionManager(GlobalVariables.screenNavigator);
-			
-			GlobalVariables.screenNavigator.showScreen(GlobalConsts.SCREEN_NAME_SAMPLE);
-		}
-		
-		private function removedFromStageHandler(event:Event):void
-		{
-			this.stage.removeEventListener(ResizeEvent.RESIZE, stage_resizeHandler);
-		}
-		
-		private function stage_resizeHandler(event:Event):void
-		{
-			GlobalVariables.screenNavigator.width = this.stage.stageWidth;
-			GlobalVariables.screenNavigator.height = this.stage.stageHeight;
-		}
 	}
 	
 }
