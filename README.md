@@ -52,6 +52,9 @@ http://fjep.sourceforge.net/
 https://github.com/yangboz/fuzzy-octo-archer/blob/master/FaceFeature/lipo_static_library_ios_simulator_shell
 
 # Starling filter/particle
+
 http://www.flintfabrik.de/pgs/starling/FFParticleSystem
+
+https://github.com/Gamua/Starling-Extension-Particle-System
 
 
