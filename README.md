@@ -59,3 +59,4 @@ https://github.com/Gamua/Starling-Extension-Particle-System
 
 http://onebyonedesign.com/flash/particleeditor/
 
+https://github.com/devon-o/Starling-Filters
