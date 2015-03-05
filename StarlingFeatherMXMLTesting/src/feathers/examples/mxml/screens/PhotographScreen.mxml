@@ -1,15 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feathers:PanelScreen xmlns:fx="http://ns.adobe.com/mxml/2009" 
 					  xmlns:feathers="feathers.controls.*" 
-					  xmlns:layout="feathers.layout.*" xmlns:data="feathers.data.*"
+					  xmlns:layout="feathers.layout.*" xmlns:data="feathers.data.*" xmlns:model="feathers.examples.mxml.model.*"
 					  >
 
 	<fx:Metadata>
 		[Event(name="complete",type="starling.events.Event")]
 	</fx:Metadata>
+	
+	<!--
+	<fx:Declarations>
+		<model:PhotographViewModel id="model"/>
+	</fx:Declarations>
+	-->
 
 	<feathers:layout>
-		<layout:AnchorLayout/>
+		<layout:VerticalLayout/>
 	</feathers:layout>
 
 	<feathers:headerProperties>
@@ -21,15 +27,43 @@
 			</fx:leftItems>
 		</fx:Object>
 	</feathers:headerProperties>
-
-	<feathers:List>
+	
+	<feathers:ImageLoader name="name_imageLoader" source="/assets/RayAllen.jpg"/>	
+	<feathers:List change="list_changeHandler(event)" scrollBarDisplayMode="float">
 		<feathers:layoutData>
-			<layout:AnchorLayoutData top="0" right="0" bottom="0" left="0"/>
+			<layout:VerticalLayoutData percentWidth="200" percentHeight="80"/>
 		</feathers:layoutData>
 		<feathers:dataProvider>
 			<data:ListCollection>
 				<fx:Array>
-					<fx:Object label="Photograph"/>
+					<fx:Object label="点状效果" filter="{new PixelateFilter(10)}"/>
+					<fx:Object label="线条效果"/>
+					<fx:Object label="泼墨效果"/>
+					<fx:Object label="AnselFilter" filter="{new AnselFilter()}"/>
+					<fx:Object label="BleachFilter" filter="{new BleachFilter()}"/>
+					<fx:Object label="BloomFilter" filter="{new BloomFilter()}"/>
+					<fx:Object label="ChromakeyFilter" filter="{new ChromakeyFilter()}"/>
+					<fx:Object label="CrossHatchFilter" filter="{new CrossHatchFilter()}"/>
+					<fx:Object label="FlashlightFilter" filter="{new FlashlightFilter()}"/>
+					<fx:Object label="GlassFilter" filter="{new GlassFilter()}"/>
+					<fx:Object label="GodRaysFilter" filter="{new GodRaysFilter()}"/>
+					<fx:Object label="LightStreakFilter" filter="{new LightStreakFilter()}"/>
+					<fx:Object label="LineGlitchFilter" filter="{new LineGlitchFilter()}"/>
+					<fx:Object label="LomoFilter" filter="{new LomoFilter()}"/>
+					<fx:Object label="MotionBlurFilter" filter="{new LomoFilter()}"/>
+					<fx:Object label="NewsprintFilter" filter="{new NewsprintFilter()}"/>
+					<fx:Object label="NoiseFilter" filter="{new NoiseFilter()}"/>
+					<fx:Object label="PixelateFilter" filter="{new PixelateFilter()}"/>
+					<fx:Object label="PosterizeFilter" filter="{new PosterizeFilter()}"/>
+					<fx:Object label="ScanlineFilter" filter="{new ScanlineFilter()}"/>
+					<fx:Object label="ScratchedFilmFilter" filter="{new ScratchedFilmFilter()}"/>
+					<fx:Object label="SineFilter" filter="{new SineFilter()}"/>
+					<fx:Object label="SpotlightFilter" filter="{new SpotlightFilter()}"/>
+					<fx:Object label="TiltShiftFilter" filter="{new TiltShiftFilter()}"/>
+					<fx:Object label="ToyBlockFilter" filter="{new ToyBlockFilter()}"/>
+					<fx:Object label="VCRFilter" filter="{new VCRFilter()}"/>
+					<fx:Object label="VignetteFilter" filter="{new VignetteFilter()}"/>
+					<fx:Object label="WrapFilter" filter="{new WarpFilter()}"/>
 				</fx:Array>
 			</data:ListCollection>
 		</feathers:dataProvider>
@@ -37,14 +71,49 @@
 			<fx:Object labelField="label"/>
 		</feathers:itemRendererProperties>
 	</feathers:List>
+	
 
 	<fx:Script><![CDATA[
 		import starling.events.Event;
+		
+		import starling.filters.AnselFilter;
+		import starling.filters.BleachFilter;
+		import starling.filters.BloomFilter;
+		import starling.filters.ChromakeyFilter;
+		import starling.filters.CrossHatchFilter;
+		import starling.filters.FlashlightFilter;
+		import starling.filters.FragmentFilter;
+		import starling.filters.GlassFilter;
+		import starling.filters.GodRaysFilter;
+		import starling.filters.LightStreakFilter;
+		import starling.filters.LineGlitchFilter;
+		import starling.filters.LomoFilter;
+		import starling.filters.NewsprintFilter;
+		import starling.filters.NoiseFilter;
+		import starling.filters.PixelateFilter;
+		import starling.filters.PosterizeFilter;
+		import starling.filters.ScanlineFilter;
+		import starling.filters.ScratchedFilmFilter;
+		import starling.filters.SineFilter;
+		import starling.filters.SpotlightFilter;
+		import starling.filters.TiltShiftFilter;
+		import starling.filters.ToyBlockFilter;
+		import starling.filters.VCRFilter;
+		import starling.filters.VignetteFilter;
+		import starling.filters.WarpFilter;
 
 		private function settingsButton_triggeredHandler(event:starling.events.Event):void
 		{
 			this.dispatchEventWith(starling.events.Event.COMPLETE);
 		}
 
-		]]></fx:Script>
+		protected function list_changeHandler(event:starling.events.Event):void
+		{
+			var imageLoader:ImageLoader = (this.getChildByName("name_imageLoader") as ImageLoader);
+			var selFilter:FragmentFilter = (event.target as List).selectedItem.filter;		
+			imageLoader.filter = null;
+			imageLoader.filter = selFilter;
+		}
+		
+	]]></fx:Script>
 </feathers:PanelScreen>

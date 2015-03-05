@@ -29,9 +29,10 @@
 		<feathers:dataProvider>
 			<data:ListCollection>
 				<fx:Array>
-					<fx:Object label="点状效果" />
-					<fx:Object label="线条效果"/>
-					<fx:Object label="泼墨效果"/>
+					<fx:Object label="DrugsConfig"/>
+					<fx:Object label="FireConfig"/>
+					<fx:Object label="SunConfig"/>
+					<fx:Object label="JellyConfig"/>
 				</fx:Array>
 			</data:ListCollection>
 		</feathers:dataProvider>
@@ -70,7 +71,28 @@
 		
 		protected function list_changeHandler(event:starling.events.Event):void
 		{
-			trace((event.target as List).selectedIndex);
+//			trace((event.target as List).selectedIndex);
+			startIndexParticleSystem((event.target as List).selectedIndex);
+		}
+		
+		private function startIndexParticleSystem(index:int):void
+		{
+			if (mParticleSystem)
+			{
+				mParticleSystem.stop();
+				mParticleSystem.removeFromParent();
+				Starling.juggler.remove(mParticleSystem);
+			}
+			
+			mParticleSystem = mParticleSystems[index];
+			mParticleSystems.push(mParticleSystem);
+			
+			mParticleSystem.emitterX = 320;
+			mParticleSystem.emitterY = 440;
+			mParticleSystem.start();
+			
+			addChild(mParticleSystem);
+			Starling.juggler.add(mParticleSystem);
 		}
 
 		protected function panelscreen_creationCompleteHandler(event:starling.events.Event):void
@@ -95,15 +117,11 @@
 			];
 			
 			// add event handlers for touch and keyboard
-			
-//			addEventListener(flash.events.Event.ADDED_TO_STAGE, onAddedToStage);
-//			addEventListener(flash.events.Event.REMOVED_FROM_STAGE, onRemovedFromStage);
-			
-			//
-			stage.addEventListener(starling.events.KeyboardEvent.KEY_DOWN, onKey);
-			stage.addEventListener(starling.events.TouchEvent.TOUCH, onTouch);
-			
-			startNextParticleSystem();
+//			stage.addEventListener(starling.events.KeyboardEvent.KEY_DOWN, onKey);
+//			stage.addEventListener(starling.events.TouchEvent.TOUCH, onTouch);
+//			
+//			startNextParticleSystem();
+			startIndexParticleSystem(0);
 		}
 		
 		private function startNextParticleSystem():void
