@@ -23,7 +23,11 @@ Image graphic/Handle: http://proj.lamb-mei.com/handlesheet/
 
 Textfield/Font: https://github.com/binouze/HTMLBitmapFonts
 
-Animation: https://github.com/threerings/flump  https://github.com/Acemobe/SpriterAS3Anim
+Animation: 
+
+https://github.com/threerings/flump  https://github.com/Acemobe/SpriterAS3Anim
+
+http://wiki.starling-framework.org/manual/animation
 
 Layout: https://github.com/BenoitFreslon/benoitfreslon-layoutmanager
 
@@ -48,6 +52,11 @@ http://fjep.sourceforge.net/
 https://github.com/yangboz/fuzzy-octo-archer/blob/master/FaceFeature/lipo_static_library_ios_simulator_shell
 
 # Starling filter/particle
+
 http://www.flintfabrik.de/pgs/starling/FFParticleSystem
 
+https://github.com/Gamua/Starling-Extension-Particle-System
 
+http://onebyonedesign.com/flash/particleeditor/
+
+https://github.com/devon-o/Starling-Filters
