@@ -19,6 +19,11 @@
 					<feathers:Button label="Back" triggered="settingsButton_triggeredHandler(event)"/>
 				</fx:Vector>
 			</fx:leftItems>
+			<fx:rightItems>
+				<fx:Vector type="starling.display.DisplayObject">
+					<feathers:Button label="Done" triggered="doneButton_triggeredHandler(event)"/>
+				</fx:Vector>
+			</fx:rightItems>
 		</fx:Object>
 	</feathers:headerProperties>
 
@@ -39,11 +44,18 @@
 	</feathers:List>
 
 	<fx:Script><![CDATA[
+		//@see: http://kvazars.com/littera/
+		//@see: https://github.com/binouze/HTMLBitmapFonts
 		import starling.events.Event;
 		
 		private function settingsButton_triggeredHandler(event:starling.events.Event):void
 		{
 			this.dispatchEventWith(starling.events.Event.COMPLETE);
+		}
+		
+		private function doneButton_triggeredHandler(event:starling.events.Event):void
+		{
+			
 		}
 
 		]]></fx:Script>

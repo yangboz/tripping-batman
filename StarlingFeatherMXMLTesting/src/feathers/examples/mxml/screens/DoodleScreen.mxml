@@ -9,7 +9,7 @@
 	</fx:Metadata>
 
 	<feathers:layout>
-		<layout:AnchorLayout/>
+		<layout:VerticalLayout/>
 	</feathers:layout>
 
 	<feathers:headerProperties>
@@ -19,31 +19,37 @@
 					<feathers:Button label="Back" triggered="settingsButton_triggeredHandler(event)"/>
 				</fx:Vector>
 			</fx:leftItems>
+			<fx:rightItems>
+				<fx:Vector type="starling.display.DisplayObject">
+					<feathers:Button label="Next" triggered="nextButton_triggeredHandler(event)"/>
+				</fx:Vector>
+			</fx:rightItems>
 		</fx:Object>
 	</feathers:headerProperties>
 
-	<feathers:List>
-		<feathers:layoutData>
-			<layout:AnchorLayoutData top="0" right="0" bottom="0" left="0"/>
-		</feathers:layoutData>
-		<feathers:dataProvider>
-			<data:ListCollection>
-				<fx:Array>
-					<fx:Object label="Doodle"/>
-				</fx:Array>
-			</data:ListCollection>
-		</feathers:dataProvider>
-		<feathers:itemRendererProperties>
-			<fx:Object labelField="label"/>
-		</feathers:itemRendererProperties>
-	</feathers:List>
-
+	<feathers:Panel width="310" height="365" backgroundSkin="{new Quad(100,100,0xFFFFFF)}">
+		
+	</feathers:Panel>
+	
+	<feathers:Panel width="280" height="85">
+		
+	</feathers:Panel>
 	<fx:Script><![CDATA[
+		import feathers.examples.mxml.consts.GlobalConsts;
+		import feathers.examples.mxml.consts.GlobalVariables;
+		
+		import starling.display.Quad;
+		
 		import starling.events.Event;
 		
 		private function settingsButton_triggeredHandler(event:starling.events.Event):void
 		{
 			this.dispatchEventWith(starling.events.Event.COMPLETE);
+		}
+		
+		private function nextButton_triggeredHandler(event:starling.events.Event):void
+		{
+			GlobalVariables.screenNavigator.showScreen(GlobalConsts.SCREEN_NAME_FILTERLIST);
 		}
 
 		]]></fx:Script>

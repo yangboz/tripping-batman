@@ -5,6 +5,7 @@
 			   creationComplete="application_creationCompleteHandler(event)" 
 			   xmlns:feathers="feathers.controls.*"
 			   backgroundAlpha="0"
+			   width="640" height="960"
 			   >
 	<fx:Script>
 		<![CDATA[

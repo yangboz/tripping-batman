@@ -64,6 +64,7 @@ package feathers.examples.mxml.consts
 		public static const SCREEN_NAME_DOODLE:String = "DOODLE";
 		public static const SCREEN_NAME_PHOTOGRAPH:String = "PHOTOGRAPH";
 		public static const SCREEN_NAME_LITERAL:String = "LITERAL";
+		public static const SCREEN_NAME_FILTERLIST:String = "FILTERLIST";
 		//--------------------------------------------------------------------------
 		//
 		// Public properties

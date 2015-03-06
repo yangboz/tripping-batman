@@ -43,19 +43,20 @@ package feathers.examples.mxml
 	import feathers.controls.ScreenNavigator;
 	import feathers.controls.ScreenNavigatorItem;
 	import feathers.examples.mxml.consts.GlobalConsts;
-	import feathers.examples.mxml.screens.SampleScreen;
-	import feathers.examples.mxml.screens.SettingsScreen;
+	import feathers.examples.mxml.consts.GlobalVariables;
 	import feathers.examples.mxml.screens.DoodleScreen;
+	import feathers.examples.mxml.screens.FilterListScreen;
 	import feathers.examples.mxml.screens.LiteralScreen;
 	import feathers.examples.mxml.screens.PhotographScreen;
+	import feathers.examples.mxml.screens.SampleScreen;
+	import feathers.examples.mxml.screens.SettingsScreen;
 	import feathers.motion.transitions.ScreenSlidingStackTransitionManager;
 	import feathers.themes.MetalWorksMobileTheme;
 	
 	import starling.display.Sprite;
 	import starling.events.Event;
 	import starling.events.ResizeEvent;
-	
-	import feathers.examples.mxml.consts.GlobalVariables;
+
 	/**
 	 * Main.as MainEntry class. 
 	 * @author yangboz
@@ -145,6 +146,10 @@ package feathers.examples.mxml
 					complete: GlobalConsts.SCREEN_NAME_SAMPLE
 				}));
 			GlobalVariables.screenNavigator.addScreen(GlobalConsts.SCREEN_NAME_PHOTOGRAPH, new ScreenNavigatorItem(PhotographScreen,
+				{
+					complete: GlobalConsts.SCREEN_NAME_SAMPLE
+				}));
+			GlobalVariables.screenNavigator.addScreen(GlobalConsts.SCREEN_NAME_FILTERLIST, new ScreenNavigatorItem(FilterListScreen,
 				{
 					complete: GlobalConsts.SCREEN_NAME_SAMPLE
 				}));

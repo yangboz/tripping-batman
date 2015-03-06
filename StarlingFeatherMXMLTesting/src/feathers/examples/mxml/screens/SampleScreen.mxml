@@ -10,7 +10,7 @@
 	</feathers:layout>
 
 	<feathers:headerProperties>
-		<fx:Object title="Feathers in MXML">
+		<fx:Object title="TeeApp">
 			<fx:rightItems>
 				<fx:Vector type="starling.display.DisplayObject">
 					<feathers:Button label="Doodle" triggered="navButton_triggeredHandler(event)"/>
@@ -88,7 +88,7 @@
 			mParticleSystems.push(mParticleSystem);
 			
 			mParticleSystem.emitterX = 320;
-			mParticleSystem.emitterY = 440;
+			mParticleSystem.emitterY = 240;
 			mParticleSystem.start();
 			
 			addChild(mParticleSystem);
