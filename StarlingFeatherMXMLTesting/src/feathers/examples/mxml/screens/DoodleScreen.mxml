@@ -27,20 +27,23 @@
 		</fx:Object>
 	</feathers:headerProperties>
 
-	<feathers:Panel width="310" height="365" backgroundSkin="{new Quad(100,100,0xFFFFFF)}">
-		
+	<feathers:Panel width="600" height="600" backgroundSkin="{new Quad(100,100,0xFFFFFF)}">
+		<feathers:ImageLoader source="assets/clothes_outline_512pxGREY.png" complete="imageloader_completeHandler(event)"/>
 	</feathers:Panel>
 	
 	<feathers:Panel width="280" height="85">
 		
 	</feathers:Panel>
 	<fx:Script><![CDATA[
+		import spark.components.Image;
+		
 		import feathers.examples.mxml.consts.GlobalConsts;
 		import feathers.examples.mxml.consts.GlobalVariables;
 		
+		import starling.display.DisplayObject;
 		import starling.display.Quad;
-		
 		import starling.events.Event;
+		import starling.extensions.handlesheet.HandleSheet;
 		
 		private function settingsButton_triggeredHandler(event:starling.events.Event):void
 		{
@@ -51,6 +54,13 @@
 		{
 			GlobalVariables.screenNavigator.showScreen(GlobalConsts.SCREEN_NAME_FILTERLIST);
 		}
-
-		]]></fx:Script>
+		
+		private var imageHandleSheet:HandleSheet;
+		protected function imageloader_completeHandler(event:starling.events.Event):void
+		{
+			this.imageHandleSheet = new HandleSheet(event.target as starling.display.DisplayObject);			
+			this.addChild(this.imageHandleSheet);
+		}
+		
+	]]></fx:Script>
 </feathers:PanelScreen>
