@@ -38,7 +38,10 @@ package assets
 	// Imports
 	//
 	//--------------------------------------------------------------------------
-	
+	import starling.text.BitmapFont;
+	import starling.text.TextField;
+	import starling.textures.Texture;
+
 	/**
 	 * EmbedAssets.as class. 
 	 * @author yangboz
@@ -82,6 +85,13 @@ package assets
 		
 		[Embed(source = "../media/jellyfish_particle.png")]
 		public static const JellyfishParticle:Class;
+		/// fonts texture
+		[Embed(source="fonts/simhei/font.fnt", mimeType="application/octet-stream")]
+		public static const FontXml:Class;
+		
+		[Embed(source = "fonts/simhei/font.png")]
+		public static const FontTexture:Class;
+		
 		//----------------------------------
 		// CONSTANTS
 		//----------------------------------

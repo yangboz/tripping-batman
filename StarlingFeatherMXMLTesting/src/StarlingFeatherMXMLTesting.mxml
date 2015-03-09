@@ -28,9 +28,9 @@
 				stage.align = StageAlign.TOP_LEFT;
 				stage.scaleMode = StageScaleMode.NO_SCALE;
 				stage.color = 0x00000000;
-//				mStarling = new Starling(Main, stage);
+				mStarling = new Starling(Main, stage);
 //				mStarling = new Starling(GraphicsAPIExample, stage);
-				mStarling = new Starling(DynamicFillExample, stage);
+//				mStarling = new Starling(DynamicFillExample, stage);
 //				mStarling = new Starling(FillStrokeExample, stage);
 //				mStarling = new Starling(FlowingLavaExample, stage);
 //				mStarling = new Starling(PrimitivesExample, stage);

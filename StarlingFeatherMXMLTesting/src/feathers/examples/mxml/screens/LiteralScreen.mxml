@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feathers:PanelScreen xmlns:fx="http://ns.adobe.com/mxml/2009" 
 					  xmlns:feathers="feathers.controls.*" 
-					  xmlns:layout="feathers.layout.*" xmlns:data="feathers.data.*"
+					  xmlns:layout="feathers.layout.*" xmlns:data="feathers.data.*" xmlns:HTMLBitmapFonts="starling.extensions.HTMLBitmapFonts.*"
 					  >
 
 	<fx:Metadata>
@@ -9,7 +9,7 @@
 	</fx:Metadata>
 
 	<feathers:layout>
-		<layout:AnchorLayout/>
+		<layout:VerticalLayout paddingTop="50" paddingLeft="50" paddingRight="50" paddingBottom="50"/>
 	</feathers:layout>
 
 	<feathers:headerProperties>
@@ -27,6 +27,9 @@
 		</fx:Object>
 	</feathers:headerProperties>
 
+	<feathers:Label text="ABCDEF中国" />
+	<feathers:TextInput text="ABCDEF中国" textEditorFactory="{this.iTextEditor}"/>
+	
 	<feathers:List>
 		<feathers:layoutData>
 			<layout:AnchorLayoutData top="0" right="0" bottom="0" left="0"/>
@@ -44,8 +47,9 @@
 	</feathers:List>
 
 	<fx:Script><![CDATA[
-		//@see: http://kvazars.com/littera/
-		//@see: https://github.com/binouze/HTMLBitmapFonts
+		import feathers.controls.text.StageTextTextEditor;
+		import feathers.core.ITextEditor;
+		
 		import starling.events.Event;
 		
 		private function settingsButton_triggeredHandler(event:starling.events.Event):void
@@ -56,6 +60,15 @@
 		private function doneButton_triggeredHandler(event:starling.events.Event):void
 		{
 			
+		}
+		//@see: http://feathersui.com/help/text-input.html
+		public function iTextEditor():ITextEditor
+		{
+			var editor:StageTextTextEditor = new StageTextTextEditor();
+			editor.fontFamily = "simhei";
+			editor.fontSize = 12;
+			editor.color = 0x333333;
+			return editor;
 		}
 
 		]]></fx:Script>

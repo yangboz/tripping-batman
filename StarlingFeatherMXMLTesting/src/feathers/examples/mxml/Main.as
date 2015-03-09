@@ -40,6 +40,8 @@ package feathers.examples.mxml
 	//--------------------------------------------------------------------------
 	import flash.display.Sprite;
 	
+	import assets.EmbedAssets;
+	
 	import feathers.controls.ScreenNavigator;
 	import feathers.controls.ScreenNavigatorItem;
 	import feathers.examples.mxml.consts.GlobalConsts;
@@ -56,6 +58,9 @@ package feathers.examples.mxml
 	import starling.display.Sprite;
 	import starling.events.Event;
 	import starling.events.ResizeEvent;
+	import starling.text.BitmapFont;
+	import starling.text.TextField;
+	import starling.textures.Texture;
 
 	/**
 	 * Main.as MainEntry class. 
@@ -101,6 +106,10 @@ package feathers.examples.mxml
 		{
 			this.addEventListener(Event.ADDED_TO_STAGE, addedToStageHandler);
 			this.addEventListener(Event.REMOVED_FROM_STAGE, removedFromStageHandler);
+			//
+			var texture:Texture = Texture.fromEmbeddedAsset(EmbedAssets.FontTexture);
+			var xml:XML = XML(new EmbedAssets.FontXml());
+			TextField.registerBitmapFont(new BitmapFont(texture, xml));
 		}
 		//--------------------------------------------------------------------------
 		//
