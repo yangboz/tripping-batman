@@ -35,15 +35,18 @@
 		
 	</feathers:Panel>
 	<fx:Script><![CDATA[
-		import spark.components.Image;
+		import assets.EmbedAssets;
 		
 		import feathers.examples.mxml.consts.GlobalConsts;
 		import feathers.examples.mxml.consts.GlobalVariables;
 		
 		import starling.display.DisplayObject;
+		import starling.display.Image;
 		import starling.display.Quad;
 		import starling.events.Event;
 		import starling.extensions.handlesheet.HandleSheet;
+		import starling.extensions.handlesheet.HandleSheetConfig;
+		import starling.textures.Texture;
 		
 		private function settingsButton_triggeredHandler(event:starling.events.Event):void
 		{
@@ -58,8 +61,19 @@
 		private var imageHandleSheet:HandleSheet;
 		protected function imageloader_completeHandler(event:starling.events.Event):void
 		{
-			this.imageHandleSheet = new HandleSheet(event.target as starling.display.DisplayObject);			
-			this.addChild(this.imageHandleSheet);
+			var texture:Texture = Texture.fromEmbeddedAsset(EmbedAssets.IconWordpressTexture);
+			var _contents:starling.display.Image = new Image(texture);
+			var _conf:HandleSheetConfig = new HandleSheetConfig();
+//			_conf.setCtrlButtonInitByTexture(_upTexture, _downTexture)
+			_conf.dispatchEventBubbles = true;
+			_conf.minSize = 0.5;
+			_conf.lineColor = 0xFF0000;
+			var hs:HandleSheet = new HandleSheet(_contents,_conf);
+			hs.maxSize = 2;
+			hs.minSize = 0.5;
+			this.addChild(hs);
+//			this.imageHandleSheet = new HandleSheet(event.target as starling.display.DisplayObject);			
+//			this.addChild(this.imageHandleSheet);
 		}
 		
 	]]></fx:Script>

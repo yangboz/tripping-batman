@@ -92,6 +92,10 @@ package assets
 		[Embed(source = "fonts/simhei/font.png")]
 		public static const FontTexture:Class;
 		
+		/// image texture
+		[Embed(source = "wordpress.png")]
+		public static const IconWordpressTexture:Class;
+		
 		//----------------------------------
 		// CONSTANTS
 		//----------------------------------
