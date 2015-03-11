@@ -31,17 +31,9 @@
  DEALINGS
  * IN THE SOFTWARE.
  */
-package feathers.examples.mxml.consts
+package feathers.examples.mxml.model
 {
-	import com.probertson.data.SQLRunner;
-	
-	import flash.filesystem.File;
-	
-	import feathers.controls.ScreenNavigator;
-	import feathers.examples.mxml.model.DoodleModel;
-	import feathers.examples.mxml.model.LiteralModel;
-	import feathers.examples.mxml.model.PhotographModel;
-	import feathers.examples.mxml.utils.SingletonFactory;
+	import flash.utils.ByteArray;
 
 	//--------------------------------------------------------------------------
 	//
@@ -50,32 +42,22 @@ package feathers.examples.mxml.consts
 	//--------------------------------------------------------------------------
 	
 	/**
-	 * GlobalVariables.as class. 
+	 * ModelBase.as class. 
 	 * @author yangboz
 	 * @langVersion 3.0
 	 * @playerVersion 11.2+
 	 * @airVersion 3.2+
-	 * Created Mar 4, 2015 12:29:29 PM
+	 * Created Mar 11, 2015 5:41:00 PM
 	 * @history 05/00/12,
 	 */ 
-	public class GlobalVariables
+	public class ModelBase
 	{ 
 		//--------------------------------------------------------------------------
 		//
 		// Variables
 		//
 		//--------------------------------------------------------------------------
-		public static var screenNavigator:ScreenNavigator;
-		//
-		// SQLite setup code:
-		// define database file location
-		public static var dbFile:File = File.applicationStorageDirectory.resolvePath("TeeDatabase.db");
-		// create the SQLRunner
-		public static var sqlRunner:SQLRunner = new SQLRunner(dbFile);
-		//
-		public static var model_doodle:DoodleModel = SingletonFactory.produce(DoodleModel);
-		public static var model_literal:LiteralModel = SingletonFactory.produce(LiteralModel);
-		public static var model_photograph:PhotographModel = SingletonFactory.produce(PhotographModel);
+		
 		//----------------------------------
 		// CONSTANTS
 		//----------------------------------
@@ -85,8 +67,18 @@ package feathers.examples.mxml.consts
 		// Public properties
 		//
 		//--------------------------------------------------------------------------
+		//@see: http://stackoverflow.com/questions/7348318/saving-and-loading-image-to-local-sqlite-blob-using-flex-4-5
+		private var _image:ByteArray;
 		
+		public function get image():ByteArray
+		{
+			return _image;
+		}
 		
+		public function set image(value:ByteArray):void
+		{
+			_image = value;
+		}
 		//--------------------------------------------------------------------------
 		//
 		// Protected properties
@@ -99,7 +91,7 @@ package feathers.examples.mxml.consts
 		// Constructor
 		//
 		//--------------------------------------------------------------------------
-		public function GlobalVariables()
+		public function ModelBase()
 		{
 		} 
 		//--------------------------------------------------------------------------
@@ -119,6 +111,7 @@ package feathers.examples.mxml.consts
 		// Private methods
 		//
 		//--------------------------------------------------------------------------
+
 	}
 	
 }

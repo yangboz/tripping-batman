@@ -31,92 +31,80 @@
  DEALINGS
  * IN THE SOFTWARE.
  */
-package feathers.examples.mxml.consts
+package feathers.examples.mxml.utils
 {
-	import com.probertson.data.SQLRunner;
-	
-	import flash.filesystem.File;
-	
-	import feathers.controls.ScreenNavigator;
-	import feathers.examples.mxml.model.DoodleModel;
-	import feathers.examples.mxml.model.LiteralModel;
-	import feathers.examples.mxml.model.PhotographModel;
-	import feathers.examples.mxml.utils.SingletonFactory;
-
 	//--------------------------------------------------------------------------
 	//
 	// Imports
 	//
 	//--------------------------------------------------------------------------
-	
+	import flash.utils.Dictionary;
 	/**
-	 * GlobalVariables.as class. 
+	 * SingletonFactory.as class. 
 	 * @author yangboz
 	 * @langVersion 3.0
 	 * @playerVersion 11.2+
 	 * @airVersion 3.2+
-	 * Created Mar 4, 2015 12:29:29 PM
+	 * Created Mar 11, 2015 5:18:08 PM
 	 * @history 05/00/12,
 	 */ 
-	public class GlobalVariables
+	public class SingletonFactory
 	{ 
 		//--------------------------------------------------------------------------
 		//
-		// Variables
+		//  Variables
 		//
 		//--------------------------------------------------------------------------
-		public static var screenNavigator:ScreenNavigator;
-		//
-		// SQLite setup code:
-		// define database file location
-		public static var dbFile:File = File.applicationStorageDirectory.resolvePath("TeeDatabase.db");
-		// create the SQLRunner
-		public static var sqlRunner:SQLRunner = new SQLRunner(dbFile);
-		//
-		public static var model_doodle:DoodleModel = SingletonFactory.produce(DoodleModel);
-		public static var model_literal:LiteralModel = SingletonFactory.produce(LiteralModel);
-		public static var model_photograph:PhotographModel = SingletonFactory.produce(PhotographModel);
+		private static var instances:Dictionary = new Dictionary(false);
 		//----------------------------------
-		// CONSTANTS
+		//  CONSTANTS
 		//----------------------------------
 		
 		//--------------------------------------------------------------------------
 		//
-		// Public properties
+		//  Public properties
 		//
-		//--------------------------------------------------------------------------
-		
-		
-		//--------------------------------------------------------------------------
-		//
-		// Protected properties
-		//
-		//--------------------------------------------------------------------------
-		
+		//-------------------------------------------------------------------------- 
 		
 		//--------------------------------------------------------------------------
 		//
-		// Constructor
+		//  Protected properties
+		//
+		//-------------------------------------------------------------------------- 
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Constructor
 		//
 		//--------------------------------------------------------------------------
-		public function GlobalVariables()
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Public methods
+		//
+		//--------------------------------------------------------------------------
+		/**
+		 * Used to create a singleton from a class without adapting the 
+		 * class itself. This function returns the same instance of the
+		 * class every time it is called. This function only works with
+		 * classes that don't require parameters in the constructor.
+		 * @see http://code.google.com/p/bigroom/source/browse/trunk/src/uk/co/bigroom/utils/singletonFactory.as
+		 * @param type The class you want a singleton from
+		 * @return the singleton instance of the class
+		 */
+		public static function produce(type:Class):*
 		{
-		} 
+			return (type in instances) ? instances[type] : instances[type] = new type();
+		}
 		//--------------------------------------------------------------------------
 		//
-		// Public methods
-		//
-		//--------------------------------------------------------------------------
-		
-		//--------------------------------------------------------------------------
-		//
-		// Protected methods
+		//  Protected methods
 		//
 		//--------------------------------------------------------------------------
 		
 		//--------------------------------------------------------------------------
 		//
-		// Private methods
+		//  Private methods
 		//
 		//--------------------------------------------------------------------------
 	}
