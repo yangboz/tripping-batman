@@ -29,6 +29,14 @@
 	</feathers:headerProperties>
 	
 	<feathers:ImageLoader name="name_imageLoader" source="/assets/RayAllen.jpg"/>	
+	<feathers:GroupedList change="groupList_changeHandler(event)" scrollBarDisplayMode="float"
+						   dataProvider="{this.hierarchicalCollection}"
+						   itemRendererFactory="{this.itemRendererFactory}"
+						   >
+		<feathers:layoutData>
+			<layout:VerticalLayoutData percentWidth="200" percentHeight="80"/>
+		</feathers:layoutData>
+		</feathers:GroupedList>
 	<feathers:List change="list_changeHandler(event)" scrollBarDisplayMode="float">
 		<feathers:layoutData>
 			<layout:VerticalLayoutData percentWidth="200" percentHeight="80"/>
@@ -74,8 +82,11 @@
 	
 
 	<fx:Script><![CDATA[
-		import starling.events.Event;
+		import feathers.controls.renderers.DefaultGroupedListItemRenderer;
+		import feathers.controls.renderers.IGroupedListItemRenderer;
+		import feathers.data.HierarchicalCollection;
 		
+		import starling.events.Event;
 		import starling.filters.AnselFilter;
 		import starling.filters.BleachFilter;
 		import starling.filters.BloomFilter;
@@ -114,6 +125,35 @@
 			imageLoader.filter = null;
 			imageLoader.filter = selFilter;
 		}
+		
+		protected function groupList_changeHandler(event:starling.events.Event):void
+		{
+			var imageLoader:ImageLoader = (this.getChildByName("name_imageLoader") as ImageLoader);
+			var selFilter:FragmentFilter = (event.target as GroupedList).selectedItem.filter;		
+			imageLoader.filter = null;
+			imageLoader.filter = selFilter;
+		}
+		
+		private var hierarchicalCollection:HierarchicalCollection = new HierarchicalCollection(
+			[
+				{
+					header: "点状效果",
+					children:
+					[
+						{ text: "方角", filter: new PixelateFilter(5) },
+						{ text: "圆角", filter: new ToyBlockFilter() }
+					]
+				}
+			]	
+		);
+		
+		private function itemRendererFactory():IGroupedListItemRenderer
+		{
+			var renderer:DefaultGroupedListItemRenderer = new DefaultGroupedListItemRenderer();
+			renderer.labelField = "text";
+//			renderer.iconSourceField = "thumbnail";
+			return renderer;
+		};
 		
 	]]></fx:Script>
 </feathers:PanelScreen>

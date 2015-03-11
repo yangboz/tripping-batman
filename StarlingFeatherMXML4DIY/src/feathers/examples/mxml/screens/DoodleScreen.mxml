@@ -2,6 +2,7 @@
 <feathers:PanelScreen xmlns:fx="http://ns.adobe.com/mxml/2009" 
 					  xmlns:feathers="feathers.controls.*" 
 					  xmlns:layout="feathers.layout.*" xmlns:data="feathers.data.*"
+					  addedToStage="panelscreen_addedToStageHandler(event)"
 					  >
 
 	<fx:Metadata>
@@ -40,9 +41,14 @@
 		import feathers.examples.mxml.consts.GlobalConsts;
 		import feathers.examples.mxml.consts.GlobalVariables;
 		
+		import starling.core.Starling;
 		import starling.display.DisplayObject;
 		import starling.display.Image;
 		import starling.display.Quad;
+		import starling.display.graphics.Fill;
+		import starling.display.materials.StandardMaterial;
+		import starling.display.shaders.fragment.TextureVertexColorFragmentShader;
+		import starling.display.shaders.vertex.StandardVertexShader;
 		import starling.events.Event;
 		import starling.extensions.handlesheet.HandleSheet;
 		import starling.extensions.handlesheet.HandleSheetConfig;
@@ -75,6 +81,71 @@
 //			this.imageHandleSheet = new HandleSheet(event.target as starling.display.DisplayObject);			
 //			this.addChild(this.imageHandleSheet);
 		}
+		
+		[Embed( source = "/assets/Checker.png" )]
+		private var CheckerBMP		:Class;
+		
+		private var currentPoint	:Point;
+		private var prevPoint		:Point;
+		private var distance		:Number;
+		private var fill			:Fill;
+		
+		
+		private function panelscreen_addedToStageHandler ( event:starling.events.Event ):void
+		{
+			fill = new Fill();
+			fill.material = new StandardMaterial( new StandardVertexShader(), new TextureVertexColorFragmentShader() );
+			fill.material.textures[0] = Texture.fromBitmap( new CheckerBMP(), false );
+			addChild(fill);
+			
+			currentPoint = new Point();
+			prevPoint = new Point();
+			
+			Starling.current.nativeStage.addEventListener(MouseEvent.MOUSE_DOWN, mouseDownHandler);
+		}
+		
+		private function mouseDownHandler( event:MouseEvent ):void
+		{
+			currentPoint.x =  Starling.current.nativeStage.mouseX;
+			currentPoint.y =  Starling.current.nativeStage.mouseY;
+			prevPoint.x = currentPoint.x;
+			prevPoint.y = currentPoint.y;
+			
+			distance = 0;
+			
+			fill.clear();
+			fill.addVertex( currentPoint.x, currentPoint.y );
+			
+			Starling.current.nativeStage.addEventListener(MouseEvent.MOUSE_MOVE, mouseMoveHandler);
+			Starling.current.nativeStage.addEventListener(MouseEvent.MOUSE_UP, mouseUpHandler);
+		}
+		
+		private function mouseMoveHandler( event:MouseEvent ):void
+		{
+			currentPoint.x += (Starling.current.nativeStage.mouseX - currentPoint.x) * 1;
+			currentPoint.y += (Starling.current.nativeStage.mouseY - currentPoint.y) * 1;
+			
+			var dx:Number = currentPoint.x - prevPoint.x;
+			var dy:Number = currentPoint.y - prevPoint.y;
+			var d:Number = Math.sqrt( dx * dx + dy * dy );
+			
+			if ( d > 5 )
+			{
+				distance += d;
+				
+				prevPoint.x = currentPoint.x;
+				prevPoint.y = currentPoint.y;
+				
+				fill.addVertex( currentPoint.x, currentPoint.y );
+			}
+		}
+		
+		private function mouseUpHandler( event:MouseEvent ):void
+		{
+			Starling.current.nativeStage.removeEventListener(MouseEvent.MOUSE_MOVE, mouseMoveHandler);
+			Starling.current.nativeStage.removeEventListener(MouseEvent.MOUSE_UP, mouseUpHandler);
+		}
+		
 		
 	]]></fx:Script>
 </feathers:PanelScreen>

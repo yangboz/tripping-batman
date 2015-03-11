@@ -33,6 +33,10 @@
  */
 package feathers.examples.mxml.model
 {
+	import flash.errors.IllegalOperationError;
+	
+	import feathers.examples.mxml.memento.Memento;
+
 	//--------------------------------------------------------------------------
 	//
 	// Imports
@@ -86,7 +90,16 @@ package feathers.examples.mxml.model
 		// Public methods
 		//
 		//--------------------------------------------------------------------------
+		override public function setMemento( memento : Memento ) : void
+		{
+			//TODO:
+		}
 		
+		override protected function doMakeMemento() : Memento
+		{
+			throw new IllegalOperationError( 'doMakeMomento must be overridden' )
+			return null;
+		}
 		//--------------------------------------------------------------------------
 		//
 		// Protected methods

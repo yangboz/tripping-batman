@@ -33,7 +33,12 @@
  */
 package feathers.examples.mxml.model
 {
+	import flash.errors.IllegalOperationError;
 	import flash.utils.ByteArray;
+	
+	import feathers.examples.mxml.memento.Memento;
+	import feathers.examples.mxml.memento.interfaces.IMemento;
+	import feathers.examples.mxml.memento.namespaces.originatorOnly;
 
 	//--------------------------------------------------------------------------
 	//
@@ -50,8 +55,9 @@ package feathers.examples.mxml.model
 	 * Created Mar 11, 2015 5:41:00 PM
 	 * @history 05/00/12,
 	 */ 
-	public class ModelBase
+	public class ModelBase implements IMemento
 	{ 
+		use namespace originatorOnly;
 		//--------------------------------------------------------------------------
 		//
 		// Variables
@@ -67,18 +73,7 @@ package feathers.examples.mxml.model
 		// Public properties
 		//
 		//--------------------------------------------------------------------------
-		//@see: http://stackoverflow.com/questions/7348318/saving-and-loading-image-to-local-sqlite-blob-using-flex-4-5
-		private var _image:ByteArray;
 		
-		public function get image():ByteArray
-		{
-			return _image;
-		}
-		
-		public function set image(value:ByteArray):void
-		{
-			_image = value;
-		}
 		//--------------------------------------------------------------------------
 		//
 		// Protected properties
@@ -99,7 +94,23 @@ package feathers.examples.mxml.model
 		// Public methods
 		//
 		//--------------------------------------------------------------------------
+		public function setMemento( memento : Memento ) : void
+		{
+			throw new IllegalOperationError( 'setMemento must be overridden' )
+			return null;
+		}
 		
+		final public function makeMemento() : Memento
+		{
+			var memento : Memento = doMakeMemento();
+			return memento;
+		}
+		
+		protected function doMakeMemento() : Memento
+		{
+			throw new IllegalOperationError( 'doMakeMomento must be overridden' )
+			return null;
+		}
 		//--------------------------------------------------------------------------
 		//
 		// Protected methods
