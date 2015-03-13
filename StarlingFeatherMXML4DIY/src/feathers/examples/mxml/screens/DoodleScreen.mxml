@@ -45,9 +45,12 @@
 		import starling.display.DisplayObject;
 		import starling.display.Image;
 		import starling.display.Quad;
+		import starling.display.Shape;
 		import starling.display.graphics.Fill;
 		import starling.display.materials.StandardMaterial;
+		import starling.display.shaders.fragment.TextureFragmentShader;
 		import starling.display.shaders.fragment.TextureVertexColorFragmentShader;
+		import starling.display.shaders.vertex.AnimateUVVertexShader;
 		import starling.display.shaders.vertex.StandardVertexShader;
 		import starling.events.Event;
 		import starling.extensions.handlesheet.HandleSheet;
@@ -84,6 +87,9 @@
 		
 		[Embed( source = "/assets/Checker.png" )]
 		private var CheckerBMP		:Class;
+		//
+		[Embed( source = "/assets/LavaTiled.png" )]
+		private var LavaTiledBMP		:Class;
 		
 		private var currentPoint	:Point;
 		private var prevPoint		:Point;
@@ -93,9 +99,29 @@
 		
 		private function panelscreen_addedToStageHandler ( event:starling.events.Event ):void
 		{
+			
+			// Some styles
+			var lavaThickness:Number = 90;
+			var bankThickness:Number = lavaThickness*2.2;
+			//
+			var shape:starling.display.Shape = new starling.display.Shape();
+			addChild(shape);
+			//
+			var lavaMaterial:StandardMaterial = new StandardMaterial(  );
+			lavaMaterial.vertexShader = new AnimateUVVertexShader( 0.1, 0 );
+			lavaMaterial.fragmentShader = new TextureFragmentShader();
+			lavaMaterial.textures[0] = Texture.fromBitmap( new LavaTiledBMP(), false );
+			shape.graphics.lineMaterial( lavaThickness, lavaMaterial );
+			shape.graphics.moveTo( 150, 0 );
+			shape.graphics.curveTo( 500, 100, 500, 300 );
+			shape.graphics.curveTo( 500, 500, 700, 650 );
+			
+			//Dynamic fill
 			fill = new Fill();
-			fill.material = new StandardMaterial( new StandardVertexShader(), new TextureVertexColorFragmentShader() );
-			fill.material.textures[0] = Texture.fromBitmap( new CheckerBMP(), false );
+//			fill.material = new StandardMaterial( new StandardVertexShader(), new TextureVertexColorFragmentShader() );
+			fill.material = lavaMaterial;
+//			fill.material.textures[0] = Texture.fromBitmap( new CheckerBMP(), false );
+			fill.material.textures[0] = Texture.fromBitmap( new LavaTiledBMP(), false );
 			addChild(fill);
 			
 			currentPoint = new Point();

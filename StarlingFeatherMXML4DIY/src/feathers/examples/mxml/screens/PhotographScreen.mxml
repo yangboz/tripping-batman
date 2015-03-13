@@ -25,6 +25,12 @@
 					<feathers:Button label="Back" triggered="settingsButton_triggeredHandler(event)"/>
 				</fx:Vector>
 			</fx:leftItems>
+			<fx:rightItems>
+				<fx:Vector type="starling.display.DisplayObject">
+					<feathers:Slider visible="false"  maximum="500" minimum="1" name="name_slider"/>
+					<feathers:Button label="Save" triggered="saveButton_triggeredHandler(event)"/>
+				</fx:Vector>
+			</fx:rightItems>
 		</fx:Object>
 	</feathers:headerProperties>
 	
@@ -37,7 +43,7 @@
 			<layout:VerticalLayoutData percentWidth="200" percentHeight="80"/>
 		</feathers:layoutData>
 		</feathers:GroupedList>
-	<feathers:List change="list_changeHandler(event)" scrollBarDisplayMode="float">
+	<feathers:List visible="false" change="list_changeHandler(event)" scrollBarDisplayMode="float">
 		<feathers:layoutData>
 			<layout:VerticalLayoutData percentWidth="200" percentHeight="80"/>
 		</feathers:layoutData>
@@ -53,6 +59,7 @@
 					<fx:Object label="ChromakeyFilter" filter="{new ChromakeyFilter()}"/>
 					<fx:Object label="CrossHatchFilter" filter="{new CrossHatchFilter()}"/>
 					<fx:Object label="FlashlightFilter" filter="{new FlashlightFilter()}"/>
+					<fx:Object label="FreezFilter" filter="{new FreezFilter()}"/>
 					<fx:Object label="GlassFilter" filter="{new GlassFilter()}"/>
 					<fx:Object label="GodRaysFilter" filter="{new GodRaysFilter()}"/>
 					<fx:Object label="LightStreakFilter" filter="{new LightStreakFilter()}"/>
@@ -82,10 +89,16 @@
 	
 
 	<fx:Script><![CDATA[
+		import feathers.controls.Slider;
 		import feathers.controls.renderers.DefaultGroupedListItemRenderer;
 		import feathers.controls.renderers.IGroupedListItemRenderer;
 		import feathers.data.HierarchicalCollection;
+		import feathers.examples.mxml.consts.GlobalConsts;
+		import feathers.examples.mxml.utils.StarlingTools;
 		
+		import nid.image.encoder.PNGEncoder;
+		
+		import starling.display.DisplayObject;
 		import starling.events.Event;
 		import starling.filters.AnselFilter;
 		import starling.filters.BleachFilter;
@@ -94,6 +107,7 @@
 		import starling.filters.CrossHatchFilter;
 		import starling.filters.FlashlightFilter;
 		import starling.filters.FragmentFilter;
+		import starling.filters.FreezFilter;
 		import starling.filters.GlassFilter;
 		import starling.filters.GodRaysFilter;
 		import starling.filters.LightStreakFilter;
@@ -117,21 +131,19 @@
 		{
 			this.dispatchEventWith(starling.events.Event.COMPLETE);
 		}
-
+		private var selFilter:FragmentFilter; 
 		protected function list_changeHandler(event:starling.events.Event):void
 		{
-			var imageLoader:ImageLoader = (this.getChildByName("name_imageLoader") as ImageLoader);
-			var selFilter:FragmentFilter = (event.target as List).selectedItem.filter;		
-			imageLoader.filter = null;
-			imageLoader.filter = selFilter;
+			this.selFilter = (event.target as List).selectedItem.filter;		
+			this.imageLoader.filter = null;
+			this.imageLoader.filter = this.selFilter;
 		}
 		
 		protected function groupList_changeHandler(event:starling.events.Event):void
 		{
-			var imageLoader:ImageLoader = (this.getChildByName("name_imageLoader") as ImageLoader);
-			var selFilter:FragmentFilter = (event.target as GroupedList).selectedItem.filter;		
-			imageLoader.filter = null;
-			imageLoader.filter = selFilter;
+			this.selFilter = (event.target as GroupedList).selectedItem.filter;		
+			this.imageLoader.filter = null;
+			this.imageLoader.filter = this.selFilter;
 		}
 		
 		private var hierarchicalCollection:HierarchicalCollection = new HierarchicalCollection(
@@ -155,5 +167,25 @@
 			return renderer;
 		};
 		
+		private function saveButton_triggeredHandler(event:starling.events.Event):void
+		{
+			var stageBitmapData:BitmapData = new BitmapData(stage.width,stage.height);
+			this.stage.drawToBitmapData(stageBitmapData,true);
+//			var bitmap:Bitmap = StarlingTools.drawToBitmap(this.imageLoader);
+			var bitmapData:BitmapData = StarlingTools.copyToBitmap(this.imageLoader,1.0);
+//			bitmap.filters = [this.selFilter];
+			var byteArray:ByteArray = PNGEncoder.encode(bitmapData,GlobalConsts.DPI_VALUE_DEFAULT);
+//			var byteArray:ByteArray = PNGEncoder.encode(stageBitmapData,GlobalConsts.DPI_VALUE_DEFAULT);
+			var fileReference:FileReference=new FileReference();
+			fileReference.save(byteArray, ".png"); 
+		}
+		
+		public function get imageLoader():ImageLoader{
+			return (this.getChildByName("name_imageLoader") as ImageLoader);
+		}
+		
+		public function get slider():Slider{
+			return (this.getChildByName("name_slider") as Slider);
+		}
 	]]></fx:Script>
 </feathers:PanelScreen>

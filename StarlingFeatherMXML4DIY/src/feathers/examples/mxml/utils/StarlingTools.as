@@ -31,8 +31,18 @@
  DEALINGS
  * IN THE SOFTWARE.
  */
-package feathers.examples.mxml.consts
+package feathers.examples.mxml.utils
 {
+	import flash.display.Bitmap;
+	import flash.display.BitmapData;
+	import flash.geom.Point;
+	import flash.geom.Rectangle;
+	
+	import starling.core.RenderSupport;
+	import starling.core.Starling;
+	import starling.display.DisplayObject;
+	import starling.display.Stage;
+
 	//--------------------------------------------------------------------------
 	//
 	// Imports
@@ -40,15 +50,15 @@ package feathers.examples.mxml.consts
 	//--------------------------------------------------------------------------
 	
 	/**
-	 * GlobalConsts.as class. 
+	 * StarlingTools.as class. 
 	 * @author yangboz
 	 * @langVersion 3.0
 	 * @playerVersion 11.2+
 	 * @airVersion 3.2+
-	 * Created Mar 4, 2015 11:39:44 AM
+	 * Created Mar 13, 2015 11:01:31 AM
 	 * @history 05/00/12,
 	 */ 
-	public class GlobalConsts
+	public class StarlingTools
 	{ 
 		//--------------------------------------------------------------------------
 		//
@@ -59,14 +69,7 @@ package feathers.examples.mxml.consts
 		//----------------------------------
 		// CONSTANTS
 		//----------------------------------
-		public static const SCREEN_NAME_SAMPLE:String = "SAMPLE";
-		public static const SCREEN_NAME_SETTINGS:String = "SETTINGS";
-		public static const SCREEN_NAME_DOODLE:String = "DOODLE";
-		public static const SCREEN_NAME_PHOTOGRAPH:String = "PHOTOGRAPH";
-		public static const SCREEN_NAME_LITERAL:String = "LITERAL";
-		public static const SCREEN_NAME_FILTERLIST:String = "FILTERLIST";
-		//
-		public static const DPI_VALUE_DEFAULT:Number = 320;
+		
 		//--------------------------------------------------------------------------
 		//
 		// Public properties
@@ -86,7 +89,7 @@ package feathers.examples.mxml.consts
 		// Constructor
 		//
 		//--------------------------------------------------------------------------
-		public function GlobalConsts()
+		public function StarlingTools()
 		{
 		} 
 		//--------------------------------------------------------------------------
@@ -94,7 +97,54 @@ package feathers.examples.mxml.consts
 		// Public methods
 		//
 		//--------------------------------------------------------------------------
+		public static function drawToBitmap(displayObject:starling.display.DisplayObject):Bitmap {
+			
+			var stageWidth:Number = Starling.current.stage.stageWidth;
+			var stageHeight:Number = Starling.current.stage.stageHeight;
+			
+			var support:RenderSupport = new RenderSupport();
+			RenderSupport.clear();
+			support.setProjectionMatrix(0, 0, stageWidth, stageHeight);
+//			support.setOrthographicProjection(0, 0, stageWidth, stageHeight);
+			support.applyBlendMode(true);
+			
+			var stageBitmapData:BitmapData = new BitmapData(stageWidth, stageHeight, true, 0x0);
+			support.blendMode = displayObject.blendMode;
+			displayObject.render(support, 1.0);
+			support.finishQuadBatch();
+			Starling.context.drawToBitmapData(stageBitmapData);
+			
+			var cropBounds:Rectangle = new Rectangle(0, 0, displayObject.width / displayObject.scaleX, displayObject.height / displayObject.scaleY);
+			var resultBitmapData:BitmapData = new BitmapData(cropBounds.width, cropBounds.height, true, 0x0);
+			resultBitmapData.copyPixels(stageBitmapData, cropBounds, new Point());
+			
+			var resultBitmap:Bitmap = new Bitmap(resultBitmapData);
+			resultBitmap.scaleX = displayObject.scaleX;
+			resultBitmap.scaleY = displayObject.scaleY;
+			return resultBitmap;
+		}
 		
+		public static function copyToBitmap(disp:DisplayObject, scl:Number=1.0):BitmapData
+		{
+			var rc:Rectangle = new Rectangle();
+			disp.getBounds(disp, rc);
+			
+			var stage:Stage= Starling.current.stage;
+			var rs:RenderSupport = new RenderSupport();
+			
+			rs.clear();
+			rs.scaleMatrix(scl, scl);
+//			rs.setOrthographicProjection(0, 0, stage.stageWidth, stage.stageHeight);
+			rs.setProjectionMatrix(0, 0, stage.stageWidth, stage.stageHeight);
+			rs.translateMatrix(-rc.x, -rc.y); // move to 0,0
+			disp.render(rs, 1.0);
+			rs.finishQuadBatch();
+			
+			var outBmp:BitmapData = new BitmapData(rc.width*scl, rc.height*scl, true);
+			Starling.context.drawToBitmapData(outBmp);
+			
+			return outBmp;
+		}
 		//--------------------------------------------------------------------------
 		//
 		// Protected methods
