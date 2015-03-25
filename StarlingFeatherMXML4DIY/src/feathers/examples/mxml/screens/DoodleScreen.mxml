@@ -27,11 +27,9 @@
 			</fx:rightItems>
 		</fx:Object>
 	</feathers:headerProperties>
-
 	<feathers:Panel width="600" height="600" backgroundSkin="{new Quad(100,100,0xFFFFFF)}">
 		<feathers:ImageLoader source="assets/clothes_outline_512pxGREY.png" complete="imageloader_completeHandler(event)"/>
 	</feathers:Panel>
-	
 	<feathers:Panel width="280" height="85">
 		
 	</feathers:Panel>
@@ -88,7 +86,8 @@
 		[Embed( source = "/assets/Checker.png" )]
 		private var CheckerBMP		:Class;
 		//
-		[Embed( source = "/assets/LavaTiled.png" )]
+//		[Embed( source = "/assets/LavaTiled.png" )]
+		[Embed( source = "/assets/OilPaintingTiled.png" )]
 		private var LavaTiledBMP		:Class;
 		
 		private var currentPoint	:Point;
@@ -108,7 +107,7 @@
 			addChild(shape);
 			//
 			var lavaMaterial:StandardMaterial = new StandardMaterial(  );
-			lavaMaterial.vertexShader = new AnimateUVVertexShader( 0.1, 0 );
+			lavaMaterial.vertexShader = new AnimateUVVertexShader( 0.01, 0 );
 			lavaMaterial.fragmentShader = new TextureFragmentShader();
 			lavaMaterial.textures[0] = Texture.fromBitmap( new LavaTiledBMP(), false );
 			shape.graphics.lineMaterial( lavaThickness, lavaMaterial );
